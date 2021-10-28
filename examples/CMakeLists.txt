@@ -1,0 +1,2 @@
+add_subdirectory(aws_iot_http)
+add_subdirectory(aws_iot_mqtt)

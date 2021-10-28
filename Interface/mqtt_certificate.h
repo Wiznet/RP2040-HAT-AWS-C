@@ -1,0 +1,14 @@
+uint8_t mqtt_root_ca[] =
+"-----BEGIN CERTIFICATE-----\r\n"
+"...\r\n"
+"-----END CERTIFICATE-----\r\n";
+
+uint8_t mqtt_client_cert[] =
+"-----BEGIN CERTIFICATE-----\r\n"
+"...\r\n"
+"-----END CERTIFICATE-----\r\n";
+
+uint8_t mqtt_private_key[] =
+"-----BEGIN RSA PRIVATE KEY-----\r\n"
+"...\r\n"
+"-----END RSA PRIVATE KEY-----\r\n";
