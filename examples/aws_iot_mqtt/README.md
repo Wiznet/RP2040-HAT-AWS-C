@@ -1,10 +1,10 @@
-# How to Test Connect AWS IoT through MQTT Example
+# How to Connect to AWS IoT through MQTT
 
 
 
 ## Step 1: Prepare software
 
-The following serial terminal program is required for connect AWS IoT through MQTT example test, download and install from below links.
+The following serial terminal program is required for connect AWS IoT through MQTT example test, download and install from below link.
 
 - [**Tera Term**][link-tera_term]
 
@@ -24,9 +24,9 @@ If you are using W5100S-EVB-Pico, you can skip '1. Combine...'
 
 ## Step 3: Setup AWS IoT
 
-To test the connect AWS IoT through MQTT example, the development environment must be configured to use AWS IoT.
+In order to connect to AWS IoT through MQTT, the development environment must be configured to use AWS IoT.
 
-The connect AWS IoT through MQTT example was tested by configuring AWS IoT Core that support AWS IoT. Please refer to the 'Create AWS IoT resources' section of document below and configure accordingly.
+This example was tested by configuring AWS IoT Core. Please refer to the 'Create AWS IoT resources' section of document below and configure accordingly.
 
 - [**Create AWS IoT resources**][link-create_aws_iot_resources]
 
@@ -81,7 +81,7 @@ static wiz_NetInfo g_net_info =
 
 3. Setup AWS IoT configuration.
 
-MQTT_DOMAIN should be setup as AWS IoT data endpoint, and MQTT_USERNAME and MQTT_PASSWORD do not need to be setup. And setup MQTT_CLIENT_ID to the thing name of the thing created when AWS IoT Core is setup.
+MQTT_DOMAIN should be setup as AWS IoT data endpoint, and MQTT_USERNAME and MQTT_PASSWORD do not need to be setup. Setup MQTT_CLIENT_ID same as thing created during AWS IoT Core setup.
 
 ```cpp
 /* AWS IoT */
@@ -95,7 +95,7 @@ MQTT_DOMAIN should be setup as AWS IoT data endpoint, and MQTT_USERNAME and MQTT
 
 4. Setup device certificate and key.
 
-You must enter is the root certificate, client certificate and private key that was downloaded in Step 3.
+You must enter the root certificate, client certificate and private key that were downloaded in Step 3.
 
 Root certificate uses the RSA 2048 bit key, Amazon Root CA 1, and does not use the public key.
 
@@ -122,7 +122,7 @@ uint8_t mqtt_private_key[] =
 
 ## Step 5: Build
 
-1. After completing the loopback example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
+1. After completing the configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
 2. When the build is completed, 'aws_iot_mqtt.uf2' is generated in 'RP2040-HAT-AWS-C/build/examples/aws_iot_mqtt/' directory.
 
