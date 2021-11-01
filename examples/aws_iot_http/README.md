@@ -3,7 +3,7 @@
 
 ## Step 1: Prepare software
 
-The following serial terminal program is required for AWS IoT HTTP test, download and install from below links.
+The following serial terminal program is required for AWS IoT HTTP test, download and install from below link.
 
 - [**Tera Term**][link-tera_term]
 
@@ -105,7 +105,7 @@ uint8_t http_private_key[] = \
 
 ## Step 5: Upload and Run
 
-1. While pressing the BOOTSEL button of Raspberry Pi Pico power on the board, the USB mass storage 'RPI-RP2' is automatically mounted.
+1. While pressing the BOOTSEL button of Raspberry Pi Pico or W5100S-EVB-Pico power on the board, the USB mass storage 'RPI-RP2' is automatically mounted.
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
@@ -119,7 +119,7 @@ uint8_t http_private_key[] = \
 
 
 
-5. If the AWS_IoT_HTTP example works normally on Raspberry Pi Pico, you can see the **wiznet.io server IP** and **cipher suite**.
+5. If the AWS_IoT_HTTP example works normally, you can see the **wiznet.io server IP** and **cipher suite**.
 
 ![][link-server_ip_ciphersuite]
 
