@@ -1,17 +1,14 @@
-
-uint8_t http_root_ca[] = \
+uint8_t http_root_ca[] =
 "-----BEGIN CERTIFICATE-----\r\n"
-"...."
-"-----END CERTIFICATE-----\r\n\0";
+"...\r\n"
+"-----END CERTIFICATE-----\r\n";
 
-uint8_t http_client_cert[] = \
+uint8_t http_client_cert[] =
 "-----BEGIN CERTIFICATE-----\r\n"
-"..."
-"-----END CERTIFICATE-----\r\n\0";
+"...\r\n"
+"-----END CERTIFICATE-----\r\n";
 
-uint8_t http_private_key[] = \
+uint8_t http_private_key[] =
 "-----BEGIN RSA PRIVATE KEY-----\r\n"
-"..."
-"-----END RSA PRIVATE KEY-----\r\n\0";
-
-
+"...\r\n"
+"-----END RSA PRIVATE KEY-----\r\n";

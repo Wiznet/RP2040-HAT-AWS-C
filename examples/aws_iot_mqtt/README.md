@@ -1,10 +1,10 @@
-# How to Connect to AWS IoT through MQTT
+# How to Test Connect to AWS IoT through MQTT Example
 
 
 
 ## Step 1: Prepare software
 
-The following serial terminal program is required for connect AWS IoT through MQTT example test, download and install from below link.
+The following serial terminal program is required for Connect AWS IoT through MQTT example test, download and install from below link.
 
 - [**Tera Term**][link-tera_term]
 
@@ -38,7 +38,7 @@ For more information on AWS IoT, refer to the document below.
 
 ## Step 4: Setup Connect AWS IoT through MQTT Example
 
-To test the connect AWS IoT through MQTT example, minor settings shall be done in code.
+To test the Connect AWS IoT through MQTT example, minor settings shall be done in code.
 
 1. Setup SPI port and pin.
 
@@ -55,7 +55,7 @@ Setup the SPI interface you use.
 #define PIN_RST 20
 ```
 
-If you want to test with the connect AWS IoT through MQTT example using SPI DMA, uncomment USE_SPI_DMA.
+If you want to test with the Connect AWS IoT through MQTT example using SPI DMA, uncomment USE_SPI_DMA.
 
 ```cpp
 /* Use SPI DMA */
@@ -64,7 +64,7 @@ If you want to test with the connect AWS IoT through MQTT example using SPI DMA,
 
 2. Setup network configuration such as IP.
 
-Setup IP and other network settings to suit your network environment.
+Setup IP, other network settings to suit your network environment and whether to use DHCP.
 
 ```cpp
 /* Network */
@@ -75,7 +75,7 @@ static wiz_NetInfo g_net_info =
         .sn = {255, 255, 255, 0},                    // Subnet Mask
         .gw = {192, 168, 11, 1},                     // Gateway
         .dns = {8, 8, 8, 8},                         // DNS server
-        .dhcp = NETINFO_STATIC                       // DHCP enable/disable
+        .dhcp = NETINFO_DHCP                         // DHCP enable/disable
 };
 ```
 
@@ -142,7 +142,7 @@ uint8_t mqtt_private_key[] =
 
 4. Reset your board.
 
-5. If the connect AWS IoT through MQTT example works normally on Raspberry Pi Pico or W5100S-EVB-Pico, you can see the network information of Raspberry Pi Pico or W5100S-EVB-Pico, connecting to the AWS IoT and publishing the message.
+5. If the Connect AWS IoT through MQTT example works normally on Raspberry Pi Pico or W5100S-EVB-Pico, you can see the network information of Raspberry Pi Pico or W5100S-EVB-Pico, connecting to the AWS IoT and publishing the message.
 
 ![][link-see_network_information_of_raspberry_pi_pico_connecting_to_aws_iot_and_publishing_message]
 

@@ -1,4 +1,4 @@
-# AWS IoT SDK Example Getting Started
+# Getting Started with AWS IoT SDK Examples
 
 These sections will guide you through a series of steps from configuring development environment to running AWS IoT SDK examples using the **WIZnet's ethernet products**.
 
@@ -18,14 +18,14 @@ The AWS IoT SDK examples were tested by configuring the development environment 
 
 - [**Getting started with Raspberry Pi Pico**][link-getting_started_with_raspberry_pi_pico]
 
-And the AWS IoT SDK examples were developed using **Visual Studio Code**, and the guide document for each AWS IoT SDK example was written based on Visual Studio Code, so please refer to it.
+**Visual Studio Code** was used during development and testing of AWS IoT SDK examples, the guide document in each directory was prepared also base on development with Visual Studio Code. Please refer to corresponding document.
 
 
 
 <a name="hardware_requirements"></a>
 ## Hardware requirements
 
-The AWS IoT SDK examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5100S-EVB-Pico** ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip.
+The AWS IoT SDK examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip.
 
 - [**Raspberry Pi Pico**][link-raspberry_pi_pico]
 
@@ -44,7 +44,7 @@ The AWS IoT SDK examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** e
 <a name="aws_iot_sdk_example_structure"></a>
 ## AWS IoT SDK example structure
 
-AWS IoT SDK examples are available at '**RP2040-HAT-AWS-C/examples/**' directory. As of now, following examples are provided.
+Examples are available at '**RP2040-HAT-AWS-C/examples/**' directory. As of now, following examples are provided.
 
 - [**HTTP & HTTPS**][link-http_https]
 - [**Connect AWS IoT through MQTT**][link-connect_aws_iot_through_mqtt]
@@ -60,7 +60,7 @@ Note that **ioLibrary_Driver** is needed to run AWS IoT SDK examples. This libra
 
 1. Download
 
-If the AWS IoT SDK example is cloned, the library set as a submodule is an empty directory. Therefore, if you want to download the library set as a submodule together, clone the AWS IoT SDK example with the following Git command.
+If the AWS IoT SDK examples are cloned, the library set as a submodule is an empty directory. Therefore, if you want to download the library set as a submodule together, clone the AWS IoT SDK examples with the following Git command.
 
 ```cpp
 git clone --recurse-submodules https://github.com/Wiznet/RP2040-HAT-AWS-C.git
@@ -87,7 +87,7 @@ git apply --ignore-whitespace ../../patches/03_mbedtls_test_mode.patch
 
 3. Test
 
-Please refer to 'README.md' in each examples directory to find detail guide for testing AWS IoT SDK examples.
+Please refer to 'README.md' in each example directory to find detail guide for testing AWS IoT SDK examples.
 
 
 
@@ -104,6 +104,6 @@ Link
 [link-wiznet_ethernet_hat_main]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/getting_started/wiznet_ethernet_hat_main.png
 [link-w5100s-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5100S/w5100s-evb-pico
 [link-w5100s-evb-pico_main]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/getting_started/w5100s-evb-pico_main.png
-[link-http_https]: https://github.com/Wiznet/RP2040-HAT-AWS-C/tree/main/examples/AWS_IoT_HTTP
-[link-connect_aws_iot_through_mqtt]: https://github.com/Wiznet/RP2040-HAT-AWS-C/tree/main/examples/AWS_IoT_MQTT
+[link-http_https]: https://github.com/Wiznet/RP2040-HAT-AWS-C/tree/main/examples/aws_iot_http
+[link-connect_aws_iot_through_mqtt]: https://github.com/Wiznet/RP2040-HAT-AWS-C/tree/main/examples/aws_iot_mqtt
 [link-ioLibrary_driver]: https://github.com/Wiznet/ioLibrary_Driver
