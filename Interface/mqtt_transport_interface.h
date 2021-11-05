@@ -1,13 +1,11 @@
-/*
- * file					: example_aws.h
- * description	: Header for aws_interface.h file.
- * author				: Austin
- * company			: WIZnet
- * date					: 2020.12.07
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef _MQTT_INTERFACE_H_
-#define _MQTT_INTERFACE_H_
+#ifndef _MQTT_TRANSPORT_INTERFACE_H_
+#define _MQTT_TRANSPORT_INTERFACE_H_
 
 /*
  * ----------------------------------------------------------------------------------------------------
@@ -27,15 +25,15 @@
  * ----------------------------------------------------------------------------------------------------
  */
 
-
-typedef enum {
-	MQTT_IDLE							 = 0,
-	MQTTS_RUNNING,
+typedef enum
+{
+    MQTT_IDLE = 0,
+    MQTTS_RUNNING,
 } mqtt_state_t;
 
 typedef struct __mqtt_config
 {
-    MQTTContext_t	mqtt_context;
+    MQTTContext_t mqtt_context;
     MQTTConnectInfo_t mqtt_connect_info;
     MQTTFixedBuffer_t mqtt_fixed_buf;
     MQTTPublishInfo_t mqtt_publish_info;
@@ -58,7 +56,6 @@ typedef struct __mqtt_config
  * ----------------------------------------------------------------------------------------------------
  */
 
-
 void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo, MQTTDeserializedInfo_t *pDeserializedInfo);
 int mqtt_transport_yield(uint32_t mqtt_yield_timeout);
 int8_t mqtt_transport_init(uint8_t cleanSession, uint8_t *ClientId, uint8_t *userName, uint8_t *password, uint32_t keepAlive);
@@ -71,5 +68,4 @@ int32_t mqtt_read(NetworkContext_t *pNetworkContext, void *pBuffer, size_t bytes
 int32_t mqtts_write(NetworkContext_t *pNetworkContext, const void *pBuffer, size_t bytesToSend);
 int32_t mqtts_read(NetworkContext_t *pNetworkContext, void *pBuffer, size_t bytesToRecv);
 
-#endif	/* _AWS_INTERFACE_H_ */
-
+#endif /* _MQTT_TRANSPORT_INTERFACE_H_ */

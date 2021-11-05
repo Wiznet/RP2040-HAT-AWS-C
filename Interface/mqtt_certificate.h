@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 uint8_t mqtt_root_ca[] =
 "-----BEGIN CERTIFICATE-----\r\n"
 "...\r\n"

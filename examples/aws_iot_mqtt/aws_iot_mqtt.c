@@ -14,13 +14,12 @@
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
+#include "pico/critical_section.h"
 #include "hardware/spi.h"
 #include "hardware/dma.h"
-#include "pico/critical_section.h"
 
 #include "wizchip_conf.h"
-#include "socket.h"
-#include "w5100s.h"
+
 #include "dhcp.h"
 #include "dns.h"
 
@@ -47,24 +46,16 @@
 /* Buffer */
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2)
 
-/* Socket */ // Socket Number 3 is used in dns_interface
-#define SOCKET_DHCP 1
+/* Socket */
 #define SOCKET_MQTT 0
-
-/* DHCP */
-#define DHCP_RETRY_COUNT 10
-
-/* DNS */
-#define DNS_RETRY_COUNT 5
+#define SOCKET_DHCP 1
+// socket number 3 is used in dns_config.h
 
 /* Port */
 #define TARGET_PORT 8883
 
-/* Publish Period */
-#define MQTT_PUB_PERIOD 10000 // 10 seconds
-
-/* Use SPI DMA */
-//#define USE_SPI_DMA // if you want to use SPI DMA
+/* MQTT */
+#define MQTT_PUB_PERIOD (1000 * 10) // 10 seconds
 
 /* AWS IoT */
 #define MQTT_DOMAIN "account-specific-prefix-ats.iot.ap-northeast-2.amazonaws.com"
@@ -74,11 +65,17 @@
 #define MQTT_PASSWORD NULL
 #define MQTT_CLIENT_ID "my_rp2040_thing"
 
+/* Use SPI DMA */
+//#define USE_SPI_DMA // if you want to use SPI DMA
+
 /**
   * ----------------------------------------------------------------------------------------------------
   * Variables
   * ----------------------------------------------------------------------------------------------------
   */
+/* Critical section */
+static critical_section_t g_wizchip_cri_sec;
+
 /* Network */
 static wiz_NetInfo g_net_info =
     {
@@ -89,25 +86,21 @@ static wiz_NetInfo g_net_info =
         .dns = {8, 8, 8, 8},                         // DNS server
         .dhcp = NETINFO_DHCP                         // DHCP
 };
-
-/* DHCP */
-static uint8_t g_dhcp_socket = SOCKET_DHCP;
-static uint8_t g_dhcp_get_ip_flag = 0;
-
-static uint8_t g_dns_get_ip_flag = 0;
-
 static uint8_t g_ethernet_buf[ETHERNET_BUF_MAX_SIZE];
 
-uint8_t g_mqtt_buf[MQTT_BUF_SIZE];
-uint8_t g_mqtt_pub_buf[MQTT_BUF_SIZE];
-
 /* SSL */
-//static uint8_t g_ssl_socket = SOCKET_SSL;
-//static uint16_t g_ssl_port = TARGET_PORT;
-tlsContext_t mqtts_tlsContext;
+static tlsContext_t mqtts_tlsContext;
 
-/* Critical Section */
-critical_section_t g_wizchip_cri_sec;
+/* MQTT */
+static uint8_t g_mqtt_buf[MQTT_BUF_MAX_SIZE];
+static uint8_t g_mqtt_pub_buf[MQTT_BUF_MAX_SIZE];
+
+#ifdef USE_SPI_DMA
+static uint dma_tx;
+static uint dma_rx;
+static dma_channel_config dma_channel_config_tx;
+static dma_channel_config dma_channel_config_rx;
+#endif
 
 /**
   * ----------------------------------------------------------------------------------------------------
@@ -120,12 +113,12 @@ static inline void wizchip_deselect(void);
 static void wizchip_reset(void);
 static uint8_t wizchip_read(void);
 static void wizchip_write(uint8_t tx_data);
-
 #ifdef USE_SPI_DMA
 static void wizchip_read_burst(uint8_t *pBuf, uint16_t len);
 static void wizchip_write_burst(uint8_t *pBuf, uint16_t len);
 #endif
-
+static void wizchip_critical_section_lock(void);
+static void wizchip_critical_section_unlock(void);
 static void wizchip_initialize(void);
 static void wizchip_check(void);
 
@@ -138,17 +131,6 @@ static void wizchip_dhcp_init(void);
 static void wizchip_dhcp_assign(void);
 static void wizchip_dhcp_conflict(void);
 
-/* Critical Section */
-static void wizchip_critical_section_lock(void);
-static void wizchip_critical_section_unlock(void);
-
-#ifdef USE_SPI_DMA
-uint dma_tx;
-uint dma_rx;
-dma_channel_config dma_channel_config_tx;
-dma_channel_config dma_channel_config_rx;
-#endif
-
 /**
   * ----------------------------------------------------------------------------------------------------
   * Main
@@ -157,18 +139,18 @@ dma_channel_config dma_channel_config_rx;
 int main()
 {
     /* Initialize */
-    int retval = 0;
-    int len;
-    uint32_t dhcp_retry = 0;
-    uint32_t tick_start, tick_end;
+    int32_t retval = 0;
+    uint32_t tick_start;
+    uint32_t tick_end;
     uint32_t pub_cnt = 0;
 
     stdio_init_all();
 
-    sleep_ms(3000);
+    sleep_ms(1000 * 3);
 
     // this example will use SPI0 at 5MHz
     spi_init(SPI_PORT, 5000 * 1000);
+
     critical_section_init(&g_wizchip_cri_sec);
 
     gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
@@ -208,81 +190,95 @@ int main()
     wizchip_initialize();
     wizchip_check();
 
+    timer_1ms_init();
+
     if (g_net_info.dhcp == NETINFO_DHCP) // DHCP
     {
         wizchip_dhcp_init();
+
         while (1)
         {
             retval = DHCP_run();
-            printf("DHCP_run() = %d\r\n", retval);
+
             if (retval == DHCP_IP_LEASED)
             {
-                printf("break\r\n");
-                dhcp_retry = 0;
                 break;
             }
+
             sleep_ms(1000);
         }
     }
     else // static
     {
         network_initialize();
-        /* Get network information */
         print_network_information();
     }
-    timer_1ms_init();
 
-    mqtts_tlsContext.clica_option = 1; //use client certificate
+    /* Setup certificate */
+    mqtts_tlsContext.rootca_option = MBEDTLS_SSL_VERIFY_REQUIRED; // use Root CA verify
+    mqtts_tlsContext.clica_option = 1;                            // use client certificate
+    mqtts_tlsContext.root_ca = mqtt_root_ca;
     mqtts_tlsContext.client_cert = mqtt_client_cert;
     mqtts_tlsContext.private_key = mqtt_private_key;
 
-    mqtts_tlsContext.rootca_option = MBEDTLS_SSL_VERIFY_REQUIRED; //use Root CA verify
-    mqtts_tlsContext.root_ca = mqtt_root_ca;
-
     retval = mqtt_transport_init(true, MQTT_CLIENT_ID, NULL, NULL, MQTT_DEFAULT_KEEP_ALIVE);
+
     if (retval != 0)
     {
-        printf("failed mqtt_transport_init retval = %d\r\n", retval);
+        printf(" Failed, mqtt_transport_init returned %d\n", retval);
+
         while (1)
             ;
     }
 
-    retval = mqtt_transport_connect(SOCKET_MQTT, 1, g_mqtt_buf, MQTT_BUF_SIZE, MQTT_DOMAIN, TARGET_PORT, &mqtts_tlsContext);
+    retval = mqtt_transport_connect(SOCKET_MQTT, 1, g_mqtt_buf, MQTT_BUF_MAX_SIZE, MQTT_DOMAIN, TARGET_PORT, &mqtts_tlsContext);
+
     if (retval != 0)
     {
-        printf("failed mqtt_transport_connect retval = %d\r\n", retval);
+        printf(" Failed, mqtt_transport_connect returned %d\n", retval);
+
         while (1)
             ;
     }
     retval = mqtt_transport_subscribe(0, MQTT_SUB_TOPIC);
+
     if (retval != 0)
     {
-        printf("failed mqtt_transport_subscribe retval = %d\r\n", retval);
+        printf(" Failed mqtt_transport_subscribe returned %d\n", retval);
+
         while (1)
             ;
     }
 
     /* Infinite loop */
     tick_start = millis();
+
     while (1)
     {
         if (g_net_info.dhcp == NETINFO_DHCP)
         {
             DHCP_run();
         }
+
         retval = mqtt_transport_yield(MQTT_DEFAULT_YIELD_TIMEOUT);
+
         if (retval != 0)
         {
-            printf("failed mqtt_transport_yield retval = %d\r\n", retval);
+            printf(" Failed mqtt_transport_yield returned %d\n", retval);
+
             while (1)
                 ;
         }
+
         tick_end = millis();
+
         if (tick_end > tick_start + MQTT_PUB_PERIOD)
         {
             tick_start = millis();
-            sprintf(g_mqtt_pub_buf, "{\"msg\":\"hello world\", \"pub_cnt\":\"%d\"}\r\n", pub_cnt);
+
+            sprintf(g_mqtt_pub_buf, "{\"message\":\"Hello, World!\", \"publish count\":\"%d\"}\n", pub_cnt);
             mqtt_transport_publish(MQTT_PUB_TOPIC, g_mqtt_pub_buf, strlen(g_mqtt_pub_buf), 0);
+
             pub_cnt++;
         }
     }
@@ -360,7 +356,6 @@ static void wizchip_read_burst(uint8_t *pBuf, uint16_t len)
 static void wizchip_write_burst(uint8_t *pBuf, uint16_t len)
 {
     uint8_t dummy_data;
-    //uint8_t dummy_arry[1024];
 
     channel_config_set_read_increment(&dma_channel_config_tx, true);
     channel_config_set_write_increment(&dma_channel_config_tx, false);
@@ -406,7 +401,6 @@ static void wizchip_initialize(void)
 #ifdef USE_SPI_DMA
     reg_wizchip_spiburst_cbfunc(wizchip_read_burst, wizchip_write_burst);
 #endif
-
     reg_wizchip_cris_cbfunc(wizchip_critical_section_lock, wizchip_critical_section_unlock);
 
     /* W5x00 initialize */
@@ -420,7 +414,7 @@ static void wizchip_initialize(void)
         return;
     }
 
-    /* PHY link status check */
+    /* Check PHY link status */
     do
     {
         if (ctlwizchip(CW_GET_PHYLINK, (void *)&temp) == -1)
@@ -483,7 +477,7 @@ static void wizchip_dhcp_init(void)
 {
     printf(" DHCP client running\n");
 
-    DHCP_init(g_dhcp_socket, g_ethernet_buf);
+    DHCP_init(SOCKET_DHCP, g_ethernet_buf);
 
     reg_dhcp_cbfunc(wizchip_dhcp_assign, wizchip_dhcp_assign, wizchip_dhcp_conflict);
 }
