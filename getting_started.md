@@ -63,6 +63,14 @@ Note that **ioLibrary_Driver** is needed to run AWS IoT SDK examples. This libra
 If the AWS IoT SDK examples are cloned, the library set as a submodule is an empty directory. Therefore, if you want to download the library set as a submodule together, clone the AWS IoT SDK examples with the following Git command.
 
 ```cpp
+/* Change directory */
+// change to the directory to clone
+cd [user path]
+
+// e.g.
+cd D:/RP2040
+
+/* Clone */
 git clone --recurse-submodules https://github.com/Wiznet/RP2040-HAT-AWS-C.git
 ```
 
@@ -75,6 +83,14 @@ With Visual Studio Code, each library set as a submodule is automatically patche
 - ioLibrary_Driver
 
 ```cpp
+/* Change directory */
+// change to the 'ioLibrary_Driver' library directory
+cd [user path]/RP2040-HAT-AWS-C/libraries/ioLibrary_Driver
+
+// e.g.
+cd D:/RP2040/RP2040-HAT-AWS-C/libraries/ioLibrary_Driver
+
+/* Patch */
 git apply ../../patches/01_ethernet_chip.patch
 git apply ../../patches/02_ftp_client.patch
 ```
@@ -82,6 +98,14 @@ git apply ../../patches/02_ftp_client.patch
 - mbedtls
 
 ```cpp
+/* Change directory */
+// change to the 'mbedtls' library directory
+cd [user path]/RP2040-HAT-AWS-C/libraries/mbedtls
+
+// e.g.
+cd D:/RP2040/RP2040-HAT-AWS-C/libraries/mbedtls
+
+/* Patch */
 git apply --ignore-whitespace ../../patches/03_mbedtls_test_mode.patch
 ```
 
