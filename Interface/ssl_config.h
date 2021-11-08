@@ -1,5 +1,5 @@
 /**
- * \file config.h
+ * \file ssl_config.h
  *
  * \brief Configuration options (set of defines)
  *

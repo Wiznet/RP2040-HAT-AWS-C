@@ -1,10 +1,9 @@
-/*
- * file: SSLInterface.c
- * description: mbedtls callback functions
- * author: peter
- * company: wiznet
- * data: 2015.11.26
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  */
+
 #include <stdio.h>
 #include <string.h>
 
@@ -17,11 +16,6 @@
 #include "ssl_transport_interface.h"
 #include "timer_interface.h"
 #include "socket.h"
-
-
-//#include "certificate.h"
-
-//unsigned char tempBuf[DEBUG_BUFFER_SIZE] = {0,};
 
 int ssl_random_callback(void *p_rng, unsigned char *output, size_t output_len)
 {
@@ -358,7 +352,3 @@ int ssl_transport_check_pkey(uint8_t *pkey_data, uint32_t pkey_len)
     mbedtls_pk_free(&pk_cert);
     return ret;
 }
-
-
-
-

@@ -1,12 +1,11 @@
-/*
- * dnsHandler.h
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
  *
- *  Created on: Jan 19, 2021
- *      Author: Hoon-Mac
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef PLATFORMHANDLER_DNSHANDLER_H_
-#define PLATFORMHANDLER_DNSHANDLER_H_
+#ifndef _DNS_INTERFACE_H_
+#define _DNS_INTERFACE_H_
 
 // DNS non-block mode: DNS op states
 #define STATE_DNS_INIT 0
@@ -32,4 +31,4 @@ int8_t DNS_run_handler(uint8_t *dns_ip, uint8_t *name, uint8_t *ip_from_dns, uin
 int8_t process_dns(uint8_t channel);
 int8_t get_ipaddr_from_dns(uint8_t *domain, uint8_t *ip_from_dns, uint8_t *buf, uint32_t timeout);
 
-#endif /* PLATFORMHANDLER_DNSHANDLER_H_ */
+#endif /* _DNS_INTERFACE_H_ */

@@ -1,9 +1,7 @@
-/*
- * file: ssl_transport_interface.h
- * description: wiznet network interface for mbedtls
- * author: peter
- * company: wiznet
- * data: 2015.11.26
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifndef _SSL_TRANSPORT_INTERFACE_H_
@@ -61,33 +59,15 @@ int recv_timeout(void *ctx, unsigned char *buf, size_t len, uint32_t timeout);
  */
 void WIZnetDebugCB(void *ctx, int level, const char *file, int line, const char *str);
 #endif
-
-/*
- * name: ssl_tls_init
- * brief: Initialize SSL/TLS Contexts.
- * param SSL/TLS Context
- * param socket file descriptor ( socket number)
- * param host name
- * param certificate
- */
 int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *host);
-
 void ssl_transport_deinit(tlsContext_t *tlsContext);
-
 int ssl_socket_connect_timeout(tlsContext_t *tlsContext, char *addr, unsigned int port, unsigned int local_port, uint32_t timeout);
-
 int ssl_transport_read(tlsContext_t *tlsContext, unsigned char *readbuf, unsigned int len);
-
 int ssl_transport_write(tlsContext_t *tlsContext, unsigned char *writebuf, unsigned int len);
-
 int ssl_transport_disconnect(tlsContext_t *tlsContext, uint32_t timeout);
-
-//unsigned int wiz_tls_x509_verify(wiz_tls_context* SSLContext);
-
 unsigned int ssl_transport_close_notify(tlsContext_t *tlsContext);
 int ssl_transport_session_reset(tlsContext_t *tlsContext);
-
 int ssl_transport_check_ca(uint8_t *ca_data, uint32_t ca_len);
 int ssl_transport_check_pkey(uint8_t *pkey_data, uint32_t pkey_len);
 
-#endif
+#endif /* _SSL_TRANSPORT_INTERFACE_H_ */

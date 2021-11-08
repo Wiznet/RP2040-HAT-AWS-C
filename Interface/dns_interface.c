@@ -1,8 +1,7 @@
-/*
- * dns_interface.c
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
  *
- *  Created on: Jan 19, 2021
- *      Author: Hoon-Mac
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "socket.h"

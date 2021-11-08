@@ -1,15 +1,14 @@
-/*
- * dns_config.h
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
  *
- *  Created on: Jan 19, 2021
- *      Author: Hoon-Mac
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef DNS_CONFIG_H
-#define DNS_CONFIG_H
+#ifndef _DNS_CONFIG_H_
+#define _DNS_CONFIG_H_
 
 #define DNS_SOCKET_NUM 3
 
 uint8_t dns_server_ip[4] = {8, 8, 8, 8};
 
-#endif /* DNS_CONFIG_H */
+#endif /* _DNS_CONFIG_H_ */

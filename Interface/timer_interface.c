@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "timer_interface.h"

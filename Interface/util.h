@@ -1,5 +1,11 @@
-#ifndef __UTILS_H
-#define __UTILS_H
+/**
+ * Copyright (c) 2021 WIZnet Co.,Ltd
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#ifndef _UTIL_H_
+#define _UTIL_H_
 
 #include <stdint.h>
 
@@ -26,4 +32,5 @@ uint8_t is_hex(uint8_t hex);
 int32_t is_zero_ether_addr(const uint8_t *addr);
 int32_t is_broadcast_ether_addr(const uint8_t *addr);
 int32_t is_multicast_ether_addr(const uint8_t *addr);
-#endif
+
+#endif /* _UTIL_H_ */

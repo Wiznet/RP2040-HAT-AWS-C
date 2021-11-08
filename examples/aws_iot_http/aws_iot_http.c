@@ -26,7 +26,7 @@
 #include "http_transport_interface.h"
 #include "timer_interface.h"
 
-#include "http_certificate.h" // if you want to setup certificate, uncomment.
+//#include "http_certificate.h" // if you want to setup certificate, uncomment.
 
 /**
   * ----------------------------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ int main()
             {
                 break;
             }
-			
+
             sleep_ms(1000);
         }
     }
