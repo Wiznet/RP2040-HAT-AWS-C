@@ -39,7 +39,7 @@ typedef struct __mqtt_config
     MQTTPublishInfo_t mqtt_publish_info;
     mqtt_state_t mqtt_state;
     MQTTSubscribeInfo_t mqtt_subscribe_info[MQTT_SUBSCRIPTION_MAX_NUM];
-    uint8_t Subscribe_count;
+    uint8_t subscribe_count;
     uint8_t mqtt_ip[4];
     uint8_t ssl_flag;
 } mqtt_config_t __attribute__((packed));

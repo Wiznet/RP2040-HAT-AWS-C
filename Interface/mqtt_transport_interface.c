@@ -20,18 +20,13 @@
  * Variables
  * ----------------------------------------------------------------------------------------------------
  */
-
-/* SSL context */
-//MQTTSubscribeInfo_t g_mqtt_subscribe_info[MQTT_SUBSCRIPTION_MAX_NUM];
-
+/* Connection informaion */
 NetworkContext_t g_network_context;
 TransportInterface_t g_transport_interface;
 mqtt_config_t g_mqtt_config;
 
 /* SSL context pointer*/
 tlsContext_t *g_mqtt_tls_context_ptr;
-
-uint8_t subscribe_count = 0;
 
 /*
  * ----------------------------------------------------------------------------------------------------
@@ -55,7 +50,6 @@ void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo,
 			printf("Sub Data=%.*s,%d,%.*s\r\n", pDeserializedInfo->pPublishInfo->topicNameLength, pDeserializedInfo->pPublishInfo->pTopicName,
 				   pDeserializedInfo->pPublishInfo->payloadLength, pDeserializedInfo->pPublishInfo->payloadLength,
 				   pDeserializedInfo->pPublishInfo->pPayload);
-			//memset((void *)pDeserializedInfo->pPublishInfo->pPayload, 0x00, pDeserializedInfo->pPublishInfo->payloadLength);
 		}
 	}
 	else
@@ -182,29 +176,29 @@ int mqtt_transport_subscribe(uint8_t qos, char *subscribe_topic)
 	packet_id = MQTT_GetPacketId(&g_mqtt_config.mqtt_context);
 	uint32_t ret;
 
-	if (g_mqtt_config.Subscribe_count > MQTT_SUBSCRIPTION_MAX_NUM)
+	if (g_mqtt_config.subscribe_count > MQTT_SUBSCRIPTION_MAX_NUM)
 	{
-		printf(" Subscribe_count > MQTT_SUBSCRIPTION_MAX_NUM : %d\r\n", g_mqtt_config.Subscribe_count);
+		printf(" Subscribe_count > MQTT_SUBSCRIPTION_MAX_NUM : %d\r\n", g_mqtt_config.subscribe_count);
 		return -1;
 	}
 
-	g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.Subscribe_count].qos = qos;
-	g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.Subscribe_count].pTopicFilter = subscribe_topic;
-	g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.Subscribe_count].topicFilterLength = strlen(subscribe_topic);
+	g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.subscribe_count].qos = qos;
+	g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.subscribe_count].pTopicFilter = subscribe_topic;
+	g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.subscribe_count].topicFilterLength = strlen(subscribe_topic);
 
 	/* Receive message */
-	ret = MQTT_Subscribe(&g_mqtt_config.mqtt_context, &g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.Subscribe_count], 1, packet_id);
+	ret = MQTT_Subscribe(&g_mqtt_config.mqtt_context, &g_mqtt_config.mqtt_subscribe_info[g_mqtt_config.subscribe_count], 1, packet_id);
 
 	if (ret != 0)
 	{
-		printf(" [DEBUG] MQTT subscription is error : %d\r\n", ret);
+		printf("MQTT subscription is error : %d\r\n", ret);
 		return -1;
 	}
 	else
 	{
-		printf(" [DEBUG] MQTT subscribe[0] is success\r\n");
+		printf("MQTT subscribe[0] is success\r\n");
 	}
-	g_mqtt_config.Subscribe_count++;
+	g_mqtt_config.subscribe_count++;
 
 	return 0;
 }
@@ -231,7 +225,6 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 
 	if (ssl_flag == 0)
 	{
-		/*socket open*/
 		ret = socket(sock, Sn_MR_TCP, 0, 0x00); // port 0 : any port
 		if (ret != sock)
 		{
@@ -254,12 +247,12 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 		if (ret != 0)
 		{
 			mqtt_transport_close(sock, &g_mqtt_config);
-			printf(" [DEBUG] SSL initialization error : %d\r\n", ret);
+			printf("SSL initialization error : %d\r\n", ret);
 			return ret;
 		}
 		else
 		{
-			printf(" [DEBUG] SSL initialization is success\r\n");
+			printf("SSL initialization is success\r\n");
 		}
 
 		ret = ssl_socket_connect_timeout(tls_context, g_mqtt_config.mqtt_ip, port, 0, MQTT_TIMEOUT);
@@ -267,12 +260,12 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 		if (ret != 0)
 		{
 			mqtt_transport_close(sock, &g_mqtt_config);
-			printf(" [DEBUG] SSL connection is error : %d\r\n", ret);
+			printf("SSL connection is error : %d\r\n", ret);
 			return ret;
 		}
 		else
 		{
-			printf(" [DEBUG] SSL connection is success\r\n");
+			printf("SSL connection is success\r\n");
 		}
 		g_mqtt_tls_context_ptr = tls_context;
 
@@ -287,19 +280,19 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 	/* Initialize MQTT context */
 	ret = MQTT_Init(&g_mqtt_config.mqtt_context,
 					&g_transport_interface,
-					millis, //HAL_GetTick,
+					millis,
 					mqtt_event_callback,
 					&g_mqtt_config.mqtt_fixed_buf);
 
 	if (ret != 0)
 	{
 		mqtt_transport_close(sock, &g_mqtt_config);
-		printf(" [DEBUG] MQTT initialization is error : %d\r\n", ret);
+		printf("MQTT initialization is error : %d\r\n", ret);
 		return -1;
 	}
 	else
 	{
-		printf(" [DEBUG] MQTT initialization is success\r\n");
+		printf("MQTT initialization is success\r\n");
 	}
 
 	/* Connect to the MQTT broker */
@@ -307,12 +300,12 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 	if (ret != 0)
 	{
 		mqtt_transport_close(sock, &g_mqtt_config);
-		printf(" [DEBUG] MQTT connection is error : %d\r\n", ret);
+		printf("MQTT connection is error : %d\r\n", ret);
 		return -1;
 	}
 	else
 	{
-		printf(" [DEBUG] MQTT connection is success\r\n");
+		printf("MQTT connection is success\r\n");
 	}
 	return 0;
 }
@@ -334,7 +327,7 @@ int mqtt_transport_close(uint8_t sock, mqtt_config_t *mqtt_config)
 		mbedtls_x509_crt_free(&g_mqtt_tls_context_ptr->clicert);
 		mbedtls_pk_free(&g_mqtt_tls_context_ptr->pkey);
 	}
-	mqtt_config->Subscribe_count = 0;
+	mqtt_config->subscribe_count = 0;
 	ret = disconnect(sock);
 
 	if (ret == SOCK_OK)
@@ -362,13 +355,13 @@ int mqtt_transport_publish(uint8_t *pub_topic, uint8_t *pub_data, uint32_t pub_d
 
 	if (ret != 0)
 	{
-		printf(" [DEBUG] MQTT pulishing is error : %d\r\n", ret);
+		printf("MQTT pulishing is error : %d\r\n", ret);
 		printf("PUBLISH FAILED\r\n");
 		return -1;
 	}
 	else
 	{
-		printf(" [DEBUG] MQTT pulishing is success\r\n");
+		printf("MQTT pulishing is success\r\n");
 		printf("PUBLISH OK\r\n");
 		return 0;
 	}
@@ -381,7 +374,7 @@ int32_t mqtt_write(NetworkContext_t *pNetworkContext, const void *pBuffer, size_
 	if (getSn_SR(pNetworkContext->socketDescriptor) == SOCK_ESTABLISHED)
 	{
 		size = send(pNetworkContext->socketDescriptor, (uint8_t *)pBuffer, bytesToSend);
-		printf("size = %d", size);
+		printf("Size = %d", size);
 	}
 
 	return size;
@@ -392,20 +385,17 @@ int32_t mqtt_read(NetworkContext_t *pNetworkContext, void *pBuffer, size_t bytes
 	int32_t size = 0;
 	uint32_t tickStart = millis();
 
-	//	if(getSn_SR(pNetworkContext->socketDescriptor) == SOCK_ESTABLISHED)
+	do
 	{
-		do
+		if (getSn_RX_RSR(pNetworkContext->socketDescriptor) > 0)
+			size = recv(pNetworkContext->socketDescriptor, pBuffer, bytesToRecv);
+		if (size != 0)
 		{
-			if (getSn_RX_RSR(pNetworkContext->socketDescriptor) > 0)
-				size = recv(pNetworkContext->socketDescriptor, pBuffer, bytesToRecv);
-			if (size != 0)
-			{
-				printf("Size = %d\r\n", size);
-				break;
-			}
-			sleep_ms(10);
-		} while ((millis() - tickStart) <= MQTT_TIMEOUT);
-	}
+			printf("Size = %d\r\n", size);
+			break;
+		}
+		sleep_ms(10);
+	} while ((millis() - tickStart) <= MQTT_TIMEOUT);
 	return size;
 }
 

@@ -10,6 +10,6 @@
 
 #define DNS_SOCKET_NUM 3
 
-uint8_t dns_server_ip[4] = {8,8,8,8};
+uint8_t dns_server_ip[4] = {8, 8, 8, 8};
 
 #endif /* DNS_CONFIG_H */

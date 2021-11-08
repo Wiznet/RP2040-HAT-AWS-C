@@ -18,16 +18,14 @@
  * Macros
  * ----------------------------------------------------------------------------------------------------
  */
-
-/* Timeout */
-#define MQTT_TIMEOUT (1000 * 10)      // 10 seconds
-#define MQTT_DEFAULT_YIELD_TIMEOUT 10 // 10 milliseconds
-
 /* Buffer */
 #define MQTT_BUF_MAX_SIZE (1024 * 2)
+#define MQTT_DOMAIN_MAX_SIZE 128
 
-/* Keep alive timeout */
-#define MQTT_DEFAULT_KEEP_ALIVE 180 // seconds
+/* Timeout */
+#define MQTT_TIMEOUT (1000 * 10)         // 10 seconds
+#define MQTT_DEFAULT_YIELD_TIMEOUT 10    // 10 milliseconds
+#define MQTT_DEFAULT_KEEP_ALIVE (60 * 3) // unit : second
 
 /* Subscription number */
 #define MQTT_SUBSCRIPTION_MAX_NUM 3

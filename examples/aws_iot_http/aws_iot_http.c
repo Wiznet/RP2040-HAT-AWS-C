@@ -13,20 +13,21 @@
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
+#include "pico/critical_section.h"
 #include "hardware/spi.h"
 #include "hardware/dma.h"
-#include "pico/critical_section.h"
 
 #include "wizchip_conf.h"
-#include "socket.h"
-#include "w5100s.h"
+
 #include "dhcp.h"
 #include "dns.h"
 
-//#include "certificate.h"
 #include "ssl_transport_interface.h"
 #include "http_transport_interface.h"
 #include "timer_interface.h"
+
+#include "http_certificate.h" // if you want to setup certificate, uncomment.
+
 /**
   * ----------------------------------------------------------------------------------------------------
   * Macros
@@ -45,28 +46,26 @@
 #define ETHERNET_BUF_MAX_SIZE (1024 * 2)
 
 /* Socket */
-#define SOCKET_DHCP 1
 #define SOCKET_HTTP 0
-
-/* DHCP */
-#define DHCP_RETRY_COUNT 10
-
-/* DNS */
-#define DNS_RETRY_COUNT 5
+#define SOCKET_DHCP 1
 
 /* Timeout */
 #define RECV_TIMEOUT (1000 * 10)
 
-/* Use SPI DMA */
-//#define USE_SPI_DMA // if you want to use SPI DMA
+/* HTTP */
+#define HTTP_GET_URL "URL"
 
-#define HTTP_GET_URL "https://wizwiki.net/download/WizFi360/SK_Magic/Test_data.txt"
+/* Use SPI DMA */
+//#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 
 /**
   * ----------------------------------------------------------------------------------------------------
   * Variables
   * ----------------------------------------------------------------------------------------------------
   */
+/* Critical section */
+static critical_section_t g_wizchip_cri_sec;
+
 /* Network */
 static wiz_NetInfo g_net_info =
     {
@@ -77,24 +76,20 @@ static wiz_NetInfo g_net_info =
         .dns = {8, 8, 8, 8},                         // DNS server
         .dhcp = NETINFO_DHCP                         // DHCP
 };
-
-/* DHCP */
-static uint8_t g_dhcp_socket = SOCKET_DHCP;
-static uint8_t g_dhcp_get_ip_flag = 0;
-
-static uint8_t g_dns_get_ip_flag = 0;
-
 static uint8_t g_ethernet_buf[ETHERNET_BUF_MAX_SIZE];
 
-uint8_t http_buf[HTTP_BUF_SIZE];
-
 /* SSL */
-//static uint8_t g_ssl_socket = SOCKET_SSL;
-//static uint16_t g_ssl_port = TARGET_PORT;
-tlsContext_t https_tlsContext;
+static tlsContext_t g_http_tls_context;
 
-/* Critical Section */
-critical_section_t g_wizchip_cri_sec;
+/* HTTP */
+static uint8_t g_http_buf[HTTP_BUF_MAX_SIZE];
+
+#ifdef USE_SPI_DMA
+static uint dma_tx;
+static uint dma_rx;
+static dma_channel_config dma_channel_config_tx;
+static dma_channel_config dma_channel_config_rx;
+#endif
 
 /**
   * ----------------------------------------------------------------------------------------------------
@@ -107,12 +102,12 @@ static inline void wizchip_deselect(void);
 static void wizchip_reset(void);
 static uint8_t wizchip_read(void);
 static void wizchip_write(uint8_t tx_data);
-
 #ifdef USE_SPI_DMA
 static void wizchip_read_burst(uint8_t *pBuf, uint16_t len);
 static void wizchip_write_burst(uint8_t *pBuf, uint16_t len);
 #endif
-
+static void wizchip_critical_section_lock(void);
+static void wizchip_critical_section_unlock(void);
 static void wizchip_initialize(void);
 static void wizchip_check(void);
 
@@ -125,17 +120,6 @@ static void wizchip_dhcp_init(void);
 static void wizchip_dhcp_assign(void);
 static void wizchip_dhcp_conflict(void);
 
-/* Critical Section */
-static void wizchip_critical_section_lock(void);
-static void wizchip_critical_section_unlock(void);
-
-#ifdef USE_SPI_DMA
-uint dma_tx;
-uint dma_rx;
-dma_channel_config dma_channel_config_tx;
-dma_channel_config dma_channel_config_rx;
-#endif
-
 /**
   * ----------------------------------------------------------------------------------------------------
   * Main
@@ -144,18 +128,15 @@ dma_channel_config dma_channel_config_rx;
 int main()
 {
     /* Initialize */
-    int retval = 0;
-    int len;
-    const int *list;
-    uint32_t dhcp_retry = 0;
-    uint32_t dns_retry = 0;
+    uint8_t retval = 0;
 
     stdio_init_all();
 
-    sleep_ms(3000);
+    sleep_ms(1000 * 3); // 3 seconds
 
     // this example will use SPI0 at 5MHz
     spi_init(SPI_PORT, 5000 * 1000);
+
     critical_section_init(&g_wizchip_cri_sec);
 
     gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
@@ -195,33 +176,35 @@ int main()
     wizchip_initialize();
     wizchip_check();
 
+    timer_1ms_init();
+
     if (g_net_info.dhcp == NETINFO_DHCP) // DHCP
     {
         wizchip_dhcp_init();
+
         while (1)
         {
             retval = DHCP_run();
-            printf("DHCP_run() = %d\r\n", retval);
+
             if (retval == DHCP_IP_LEASED)
             {
-                printf("break\r\n");
-                dhcp_retry = 0;
                 break;
             }
+			
             sleep_ms(1000);
         }
     }
     else // static
     {
         network_initialize();
-        /* Get network information */
         print_network_information();
     }
-    timer_1ms_init();
 
-    https_tlsContext.clica_option = 0;                        //None use client certificate
-    https_tlsContext.rootca_option = MBEDTLS_SSL_VERIFY_NONE; //None use Root CA
-    http_get(SOCKET_HTTP, http_buf, HTTP_GET_URL, &https_tlsContext);
+    /* Setup certificate */
+    g_http_tls_context.rootca_option = MBEDTLS_SSL_VERIFY_NONE; // not used Root CA verify
+    g_http_tls_context.clica_option = 0;                        // not used client certificate
+
+    http_get(SOCKET_HTTP, g_http_buf, HTTP_GET_URL, &g_http_tls_context);
 
     /* Infinite loop */
     while (1)
@@ -305,7 +288,6 @@ static void wizchip_read_burst(uint8_t *pBuf, uint16_t len)
 static void wizchip_write_burst(uint8_t *pBuf, uint16_t len)
 {
     uint8_t dummy_data;
-    //uint8_t dummy_arry[1024];
 
     channel_config_set_read_increment(&dma_channel_config_tx, true);
     channel_config_set_write_increment(&dma_channel_config_tx, false);
@@ -351,7 +333,6 @@ static void wizchip_initialize(void)
 #ifdef USE_SPI_DMA
     reg_wizchip_spiburst_cbfunc(wizchip_read_burst, wizchip_write_burst);
 #endif
-
     reg_wizchip_cris_cbfunc(wizchip_critical_section_lock, wizchip_critical_section_unlock);
 
     /* W5x00 initialize */
@@ -365,7 +346,7 @@ static void wizchip_initialize(void)
         return;
     }
 
-    /* PHY link status check */
+    /* Check PHY link status */
     do
     {
         if (ctlwizchip(CW_GET_PHYLINK, (void *)&temp) == -1)
@@ -428,7 +409,7 @@ static void wizchip_dhcp_init(void)
 {
     printf(" DHCP client running\n");
 
-    DHCP_init(g_dhcp_socket, g_ethernet_buf);
+    DHCP_init(SOCKET_DHCP, g_ethernet_buf);
 
     reg_dhcp_cbfunc(wizchip_dhcp_assign, wizchip_dhcp_assign, wizchip_dhcp_conflict);
 }

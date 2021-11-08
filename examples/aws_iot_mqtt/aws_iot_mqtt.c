@@ -66,7 +66,7 @@
 #define MQTT_CLIENT_ID "my_rp2040_thing"
 
 /* Use SPI DMA */
-//#define USE_SPI_DMA // if you want to use SPI DMA
+//#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 
 /**
   * ----------------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ static wiz_NetInfo g_net_info =
 static uint8_t g_ethernet_buf[ETHERNET_BUF_MAX_SIZE];
 
 /* SSL */
-static tlsContext_t mqtts_tlsContext;
+static tlsContext_t g_mqtt_tls_context;
 
 /* MQTT */
 static uint8_t g_mqtt_buf[MQTT_BUF_MAX_SIZE];
@@ -146,7 +146,7 @@ int main()
 
     stdio_init_all();
 
-    sleep_ms(1000 * 3);
+    sleep_ms(1000 * 3); // 3 seconds
 
     // this example will use SPI0 at 5MHz
     spi_init(SPI_PORT, 5000 * 1000);
@@ -215,11 +215,11 @@ int main()
     }
 
     /* Setup certificate */
-    mqtts_tlsContext.rootca_option = MBEDTLS_SSL_VERIFY_REQUIRED; // use Root CA verify
-    mqtts_tlsContext.clica_option = 1;                            // use client certificate
-    mqtts_tlsContext.root_ca = mqtt_root_ca;
-    mqtts_tlsContext.client_cert = mqtt_client_cert;
-    mqtts_tlsContext.private_key = mqtt_private_key;
+    g_mqtt_tls_context.rootca_option = MBEDTLS_SSL_VERIFY_REQUIRED; // use Root CA verify
+    g_mqtt_tls_context.clica_option = 1;                            // use client certificate
+    g_mqtt_tls_context.root_ca = mqtt_root_ca;
+    g_mqtt_tls_context.client_cert = mqtt_client_cert;
+    g_mqtt_tls_context.private_key = mqtt_private_key;
 
     retval = mqtt_transport_init(true, MQTT_CLIENT_ID, NULL, NULL, MQTT_DEFAULT_KEEP_ALIVE);
 
@@ -231,7 +231,7 @@ int main()
             ;
     }
 
-    retval = mqtt_transport_connect(SOCKET_MQTT, 1, g_mqtt_buf, MQTT_BUF_MAX_SIZE, MQTT_DOMAIN, TARGET_PORT, &mqtts_tlsContext);
+    retval = mqtt_transport_connect(SOCKET_MQTT, 1, g_mqtt_buf, MQTT_BUF_MAX_SIZE, MQTT_DOMAIN, TARGET_PORT, &g_mqtt_tls_context);
 
     if (retval != 0)
     {
@@ -244,15 +244,15 @@ int main()
 
     if (retval != 0)
     {
-        printf(" Failed mqtt_transport_subscribe returned %d\n", retval);
+        printf(" Failed, mqtt_transport_subscribe returned %d\n", retval);
 
         while (1)
             ;
     }
 
-    /* Infinite loop */
     tick_start = millis();
 
+    /* Infinite loop */
     while (1)
     {
         if (g_net_info.dhcp == NETINFO_DHCP)
@@ -264,7 +264,7 @@ int main()
 
         if (retval != 0)
         {
-            printf(" Failed mqtt_transport_yield returned %d\n", retval);
+            printf(" Failed, mqtt_transport_yield returned %d\n", retval);
 
             while (1)
                 ;
