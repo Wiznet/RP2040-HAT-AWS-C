@@ -109,6 +109,20 @@ cd D:/RP2040/RP2040-HAT-AWS-C/libraries/mbedtls
 git apply --ignore-whitespace ../../patches/03_mbedtls_test_mode.patch
 ```
 
+- aws-iot-device-sdk-embedded-C
+
+```cpp
+/* Change directory */
+// change to the 'coreHTTP' library directory inside the 'aws-iot-device-sdk-embedded-C' library directory.
+cd [user path]/RP2040-HAT-AWS-C/libraries/aws-iot-device-sdk-embedded-C/libraries/standard/coreHTTP
+
+// e.g.
+cd D:/RP2040/RP2040-HAT-AWS-C/libraries/aws-iot-device-sdk-embedded-C/libraries/standard/coreHTTP
+
+/* Patch */
+git apply --ignore-whitespace ../../../../../patches/04_corehttp_network_interface.patch
+```
+
 3. Test
 
 Please refer to 'README.md' in each example directory to find detail guide for testing AWS IoT SDK examples.
