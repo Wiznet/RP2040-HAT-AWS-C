@@ -84,7 +84,7 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
 
     response.pBuffer = buffer;
     response.bufferLen = HTTP_BUF_MAX_SIZE;
-    response.getTime = millis();
+    response.getTime = millis;
 
     httpStatus = HTTPClient_InitializeRequestHeaders(&requestHeaders, &requestInfo);
     if (httpStatus != HTTPSuccess)
