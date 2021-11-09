@@ -4,3 +4,6 @@
 [submodule "libraries/mbedtls"]
 	path = libraries/mbedtls
 	url = https://github.com/ARMmbed/mbedtls.git
+[submodule "libraries/aws-iot-device-sdk-embedded-C"]
+	path = libraries/aws-iot-device-sdk-embedded-C
+	url = https://github.com/aws/aws-iot-device-sdk-embedded-C.git
