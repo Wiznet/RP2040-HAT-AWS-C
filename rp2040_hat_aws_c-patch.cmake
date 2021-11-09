@@ -13,6 +13,8 @@ message("RP2040-HAT-AWS-C patch utils found")
 set(RP2040_HAT_AWS_C_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(IOLIBRARY_DRIVER_SRC_DIR "${RP2040_HAT_AWS_C_SRC_DIR}/libraries/ioLibrary_Driver")
 set(MBEDTLS_SRC_DIR "${RP2040_HAT_AWS_C_SRC_DIR}/libraries/mbedtls")
+set(AWS_IOT_DEVICE_SDK_EMBEDDED_C_SRC_DIR "${RP2040_HAT_AWS_C_SRC_DIR}/libraries/aws-iot-device-sdk-embedded-C")
+set(AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_SRC_DIR "${RP2040_HAT_AWS_C_SRC_DIR}/libraries/aws-iot-device-sdk-embedded-C/libraries/standard/coreHTTP")
 set(RP2040_HAT_AWS_C_PATCH_DIR "${RP2040_HAT_AWS_C_SRC_DIR}/patches")
 
 if(EXISTS "${IOLIBRARY_DRIVER_SRC_DIR}/.git")
@@ -27,6 +29,13 @@ if(EXISTS "${MBEDTLS_SRC_DIR}/.git")
 	execute_process(COMMAND ${GIT_EXECUTABLE} -C ${MBEDTLS_SRC_DIR} clean -fdx)
 	execute_process(COMMAND ${GIT_EXECUTABLE} -C ${MBEDTLS_SRC_DIR} reset --hard)
 	message("mbedtls cleaned")
+endif()
+
+if(EXISTS "${AWS_IOT_DEVICE_SDK_EMBEDDED_C_SRC_DIR}/.git")
+	message("cleaning aws-iot-device-sdk-embedded-C...")
+	execute_process(COMMAND ${GIT_EXECUTABLE} -C ${AWS_IOT_DEVICE_SDK_EMBEDDED_C_SRC_DIR} clean -fdx)
+	execute_process(COMMAND ${GIT_EXECUTABLE} -C ${AWS_IOT_DEVICE_SDK_EMBEDDED_C_SRC_DIR} reset --hard)
+	message("aws-iot-device-sdk-embedded-C cleaned")
 endif()
 
 execute_process(COMMAND ${GIT_EXECUTABLE} -C ${RP2040_HAT_AWS_C_SRC_DIR} submodule update --init)
@@ -59,5 +68,20 @@ foreach(MBEDTLS_PATCH IN LISTS MBEDTLS_PATCHES)
 	execute_process(
 		COMMAND ${GIT_EXECUTABLE} apply --ignore-whitespace ${MBEDTLS_PATCH}
 		WORKING_DIRECTORY ${MBEDTLS_SRC_DIR}
+	)
+endforeach()
+
+# aws-iot-device-sdk-embedded-C patch
+message("submodules aws-iot-device-sdk-embedded-C initialised")
+
+file(GLOB AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCHES 
+	"${RP2040_HAT_AWS_C_PATCH_DIR}/04_corehttp_network_interface.patch"
+	)
+
+foreach(AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCH IN LISTS AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCHES)
+	message("Running patch ${AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCH}")
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} apply ${AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCH}
+		WORKING_DIRECTORY ${AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_SRC_DIR}
 	)
 endforeach()
