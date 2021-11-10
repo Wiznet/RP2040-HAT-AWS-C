@@ -71,8 +71,8 @@ execute_process(COMMAND ${GIT_EXECUTABLE} -C ${AWS_IOT_DEVICE_SDK_EMBEDDED_C_COR
 message("submodules ioLibrary_Driver initialised")
 
 file(GLOB IOLIBRARY_DRIVER_PATCHES 
-	"${RP2040_HAT_AWS_C_PATCH_DIR}/01_ethernet_chip.patch" 
-	"${RP2040_HAT_AWS_C_PATCH_DIR}/02_ftp_client.patch"
+	"${RP2040_HAT_AWS_C_PATCH_DIR}/01_iolibrary_driver_ethernet_chip.patch" 
+	"${RP2040_HAT_AWS_C_PATCH_DIR}/02_iolibrary_driver_ftp_client.patch"
 	)
 
 foreach(IOLIBRARY_DRIVER_PATCH IN LISTS IOLIBRARY_DRIVER_PATCHES)
@@ -102,7 +102,7 @@ endforeach()
 message("submodules aws-iot-device-sdk-embedded-C initialised")
 
 file(GLOB AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCHES 
-	"${RP2040_HAT_AWS_C_PATCH_DIR}/04_corehttp_network_interface.patch"
+	"${RP2040_HAT_AWS_C_PATCH_DIR}/04_aws_iot_device_sdk_embedded_c_corehttp_network_interface.patch"
 	)
 
 foreach(AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCH IN LISTS AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCHES)
