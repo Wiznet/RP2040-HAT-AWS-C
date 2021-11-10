@@ -129,10 +129,10 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
                                      &response,
                                      0);
 
-        printf("response.headersLen = %d", response.headersLen);
-        printf("response.bodyLen = %d", response.bodyLen);
-        printf("response.contentLength = %d", response.contentLength);
-        printf("response.pBody = \r\n%.*s", response.bodyLen, response.pBody);
+        printf("Response Headers Length: %d\n", response.headersLen);
+        printf("Response Content Length: %d\n", response.contentLength);
+        printf("Response Body Length: %d\n", response.bodyLen);
+        printf("Response Body:\n%.*s\n", response.bodyLen, response.pBody);
     }
     else
     {
@@ -144,19 +144,23 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
 
     if (httpStatus == HTTPInsufficientMemory)
     {
-        printf("httpStatus == HTTPInsufficientMemory\r\n");
-        printf("BODY Length=%d,", response.contentLength);
-        printf("%.*s\r\n", response.bodyLen, response.pBody);
+        printf("Response buffer has insufficient\n");
+        printf("Response Content Length: %d\n", response.contentLength);
+        printf("Response Body Length: %d\n", response.bodyLen);
+        printf("Response Body:\n%.*s\n", response.bodyLen, response.pBody);
 
         while (1)
         {
             memset(buffer, NULL, HTTP_BUF_MAX_SIZE);
             currentReceived = pTransportInterface->recv(pTransportInterface->pNetworkContext, buffer, HTTP_BUF_MAX_SIZE);
-            printf("currentReceived = %d\r\n", currentReceived);
-            printf("currentTotalLen = %d\r\n", currentTotalLen + currentReceived);
+
+            printf("Current Received: %d\n", currentReceived);
+            printf("Current Received Total Length: %d/%d\n", currentTotalLen + currentReceived, response.contentLength);
+
             if (currentReceived > 0)
             {
-                printf("%.*s\r\n", response.bodyLen, response.pBody);
+                printf("\n%.*s\n", response.bodyLen, response.pBody);
+
                 currentTotalLen += currentReceived;
                 if (currentTotalLen >= response.contentLength)
                 {
@@ -170,16 +174,17 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
             }
         }
     }
-
     else if (httpStatus == HTTPSuccess)
     {
-        printf("BODY Length=%d,", response.contentLength);
-        printf("%.*s\r\n", response.bodyLen, response.pBody);
+        printf("Response Content Length: %d\n", response.contentLength);
+        printf("Response Body:\n%.*s\n", response.bodyLen, response.pBody);
     }
+
     if (httpStatus != HTTPSuccess)
     {
         returnStatus = -1;
     }
+
     return returnStatus;
 }
 
@@ -194,6 +199,7 @@ int8_t http_connect(uint8_t sock, http_config_t *http_config)
     if (ret != sock)
     {
         printf(" failed\n  ! socket returned %d\n\n", ret);
+
         return -1;
     }
 
@@ -203,8 +209,10 @@ int8_t http_connect(uint8_t sock, http_config_t *http_config)
     if (ret != SOCK_OK)
     {
         printf(" failed\n  ! connect returned %d\n\n", ret);
+
         return -1;
     }
+
     return 0;
 }
 
@@ -230,9 +238,11 @@ int8_t http_close(uint8_t sock, http_config_t *http_config)
     http_config->http_state = HTTP_IDLE;
     if (ret != SOCK_OK)
     {
-        printf(" failed! disconnect returned %d\n\n", ret);
+        printf(" failed\n  ! disconnect returned %d\n\n", ret);
+
         return ret;
     }
+
     return ret;
 }
 
@@ -243,7 +253,6 @@ int32_t http_write(NetworkContext_t *pNetworkContext, const void *pBuffer, size_
     if (getSn_SR(pNetworkContext->socketDescriptor) == SOCK_ESTABLISHED)
     {
         size = send(pNetworkContext->socketDescriptor, (uint8_t *)pBuffer, bytesToSend);
-        printf("Size = %d", size);
     }
 
     return size;
@@ -260,11 +269,11 @@ int32_t http_read(NetworkContext_t *pNetworkContext, void *pBuffer, size_t bytes
             size = recv(pNetworkContext->socketDescriptor, pBuffer, bytesToRecv);
         if (size != 0)
         {
-            printf("Size = %d\r\n", size);
             break;
         }
         sleep_ms(10);
     } while ((millis() - tickStart) <= HTTP_TIMEOUT);
+
     return size;
 }
 
@@ -284,6 +293,7 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
     if (ret < 0)
     {
         http_close(sock, &g_http_config);
+
         return -1;
     }
     if (ret == 1)
@@ -296,6 +306,7 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
     if (ret)
     {
         http_close(sock, &g_http_config);
+
         return -1;
     }
 
@@ -317,6 +328,7 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
         if (ret != 1)
         {
             http_close(sock, &g_http_config);
+
             return -1;
         }
     }
@@ -331,6 +343,7 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
         if (ret != 0)
         {
             http_close(sock, &g_http_config);
+
             return HTTPNetworkError;
         }
         g_http_transport_interface.send = http_write;
@@ -341,12 +354,14 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
         if (tls_context == NULL)
         {
             http_close(sock, &g_http_config);
+
             return -1;
         }
         ret = https_connect(g_http_network_context.socketDescriptor, &g_http_config, tls_context);
         if (ret != 0)
         {
             http_close(sock, &g_http_config);
+
             return HTTPNetworkError;
         }
         g_http_transport_interface.send = https_write;
@@ -361,8 +376,9 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
     http_close(sock, &g_http_config);
     if (ret != HTTPSuccess)
     {
-        printf(" failed ! http_send_request returned %d\n\n", ret);
+        printf(" failed\n  ! http_send_request returned %d\n\n", ret);
     }
+
     return ret;
 }
 
@@ -382,6 +398,7 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
     if (ret < 0)
     {
         http_close(sock, &g_http_config);
+
         return -1;
     }
     if (ret == 1)
@@ -394,6 +411,7 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
     if (ret)
     {
         http_close(sock, &g_http_config);
+
         return -1;
     }
 
@@ -415,6 +433,7 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
         if (ret != 1)
         {
             http_close(sock, &g_http_config);
+
             return -1;
         }
     }
@@ -429,6 +448,7 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
         if (ret != 0)
         {
             http_close(sock, &g_http_config);
+
             return HTTPNetworkError;
         }
         g_http_transport_interface.send = http_write;
@@ -440,6 +460,7 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
         if (ret != 0)
         {
             http_close(sock, &g_http_config);
+
             return HTTPNetworkError;
         }
         g_http_transport_interface.send = https_write;
@@ -455,6 +476,7 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
     if (ret != HTTPSuccess)
     {
         printf(" failed\n  ! http_send_request returned %d\n\n", ret);
+
         return ret;
     }
 
@@ -471,6 +493,7 @@ int8_t https_connect(uint8_t sock, http_config_t *http_config, tlsContext_t *tls
     if (ret != 0)
     {
         printf(" failed\n  ! wiz_tls_init returned %d\n\n", ret);
+
         return ret;
     }
 
@@ -479,9 +502,11 @@ int8_t https_connect(uint8_t sock, http_config_t *http_config, tlsContext_t *tls
     if (ret != 0)
     {
         printf(" failed\n  ! connect returned %d\n\n", ret);
+
         return ret;
     }
     g_http_tls_context_ptr = tls_context;
+
     return ret;
 }
 
@@ -492,8 +517,6 @@ int32_t https_write(NetworkContext_t *pNetworkContext, const void *pBuffer, size
     if (getSn_SR(pNetworkContext->socketDescriptor) == SOCK_ESTABLISHED)
     {
         size = ssl_transport_write(g_http_tls_context_ptr, (uint8_t *)pBuffer, bytesToSend);
-
-        printf("Size = %d", size);
     }
 
     return size;
@@ -511,6 +534,7 @@ int32_t https_read(NetworkContext_t *pNetworkContext, void *pBuffer, size_t byte
         if (size != 0)
             break;
     } while ((millis() - tickStart) <= HTTP_TIMEOUT);
+
     return size;
 }
 
@@ -585,6 +609,7 @@ HTTPStatus_t getUrlInfo(const char *pUrl,
     }
 
     *port = urlParser.port;
+
     return httpStatus;
 }
 

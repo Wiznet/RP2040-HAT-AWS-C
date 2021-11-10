@@ -10,7 +10,6 @@
 #include "dhcp.h"
 #include "dns.h"
 
-/* Timer  */
 struct repeating_timer g_timer;
 volatile uint32_t devtime_msec = 0;
 volatile uint32_t g_msec_cnt = 0;

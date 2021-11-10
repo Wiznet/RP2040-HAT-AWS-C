@@ -25,7 +25,7 @@ NetworkContext_t g_network_context;
 TransportInterface_t g_transport_interface;
 mqtt_config_t g_mqtt_config;
 
-/* SSL context pointer*/
+/* SSL context pointer */
 tlsContext_t *g_mqtt_tls_context_ptr;
 
 /*
@@ -43,13 +43,9 @@ void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo,
 		/* Handle incoming publish. */
 		if (pDeserializedInfo->pPublishInfo->payloadLength)
 		{
-			printf("====================================================================================================\r\n");
-			printf(" %s [%d bytes]\r\n", (char *)pDeserializedInfo->pPublishInfo->pPayload, pDeserializedInfo->pPublishInfo->payloadLength);
-			printf("====================================================================================================\r\n\r\n");
-
-			printf("Sub Data=%.*s,%d,%.*s\r\n", pDeserializedInfo->pPublishInfo->topicNameLength, pDeserializedInfo->pPublishInfo->pTopicName,
-				   pDeserializedInfo->pPublishInfo->payloadLength, pDeserializedInfo->pPublishInfo->payloadLength,
-				   pDeserializedInfo->pPublishInfo->pPayload);
+			printf("%.*s,%d,%.*s\n", pDeserializedInfo->pPublishInfo->topicNameLength, pDeserializedInfo->pPublishInfo->pTopicName,
+				   pDeserializedInfo->pPublishInfo->payloadLength,
+				   pDeserializedInfo->pPublishInfo->payloadLength, pDeserializedInfo->pPublishInfo->pPayload);
 		}
 	}
 	else
@@ -57,66 +53,66 @@ void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo,
 		/* Handle other packets. */
 		switch (pPacketInfo->type)
 		{
-		case MQTT_PACKET_TYPE_SUBACK:
-		{
-			printf("Received SUBACK: PacketID=%u\r\n", pDeserializedInfo->packetIdentifier);
+			case MQTT_PACKET_TYPE_SUBACK:
+			{
+				printf("Received SUBACK: PacketID=%u\n", pDeserializedInfo->packetIdentifier);
 
-			break;
-		}
+				break;
+			}
 
-		case MQTT_PACKET_TYPE_PINGRESP:
-		{
-			/* Nothing to be done from application as library handles
-				 * PINGRESP. */
-			printf("Received PINGRESP\r\n");
+			case MQTT_PACKET_TYPE_PINGRESP:
+			{
+				/* Nothing to be done from application as library handles
+									* PINGRESP. */
+				printf("Received PINGRESP\n");
 
-			break;
-		}
+				break;
+			}
 
-		case MQTT_PACKET_TYPE_UNSUBACK:
-		{
-			printf("Received UNSUBACK: PacketID=%u\r\n", pDeserializedInfo->packetIdentifier);
+			case MQTT_PACKET_TYPE_UNSUBACK:
+			{
+				printf("Received UNSUBACK: PacketID=%u\n", pDeserializedInfo->packetIdentifier);
 
-			break;
-		}
+				break;
+			}
 
-		case MQTT_PACKET_TYPE_PUBACK:
-		{
-			printf("Received PUBACK: PacketID=%u\r\n", pDeserializedInfo->packetIdentifier);
+			case MQTT_PACKET_TYPE_PUBACK:
+			{
+				printf("Received PUBACK: PacketID=%u\n", pDeserializedInfo->packetIdentifier);
 
-			break;
-		}
+				break;
+			}
 
-		case MQTT_PACKET_TYPE_PUBREC:
-		{
-			printf("Received PUBREC: PacketID=%u\r\n", pDeserializedInfo->packetIdentifier);
+			case MQTT_PACKET_TYPE_PUBREC:
+			{
+				printf("Received PUBREC: PacketID=%u\n", pDeserializedInfo->packetIdentifier);
 
-			break;
-		}
+				break;
+			}
 
-		case MQTT_PACKET_TYPE_PUBREL:
-		{
-			/* Nothing to be done from application as library handles
-				 * PUBREL. */
-			printf("Received PUBREL: PacketID=%u\r\n", pDeserializedInfo->packetIdentifier);
+			case MQTT_PACKET_TYPE_PUBREL:
+			{
+				/* Nothing to be done from application as library handles
+									* PUBREL. */
+				printf("Received PUBREL: PacketID=%u\n", pDeserializedInfo->packetIdentifier);
 
-			break;
-		}
+				break;
+			}
 
-		case MQTT_PACKET_TYPE_PUBCOMP:
-		{
-			/* Nothing to be done from application as library handles
-					 * PUBCOMP. */
-			printf("Received PUBCOMP: PacketID=%u\r\n", pDeserializedInfo->packetIdentifier);
+			case MQTT_PACKET_TYPE_PUBCOMP:
+			{
+				/* Nothing to be done from application as library handles
+										* PUBCOMP. */
+				printf("Received PUBCOMP: PacketID=%u\n", pDeserializedInfo->packetIdentifier);
 
-			break;
-		}
+				break;
+			}
 
-		/* Any other packet type is invalid. */
-		default:
-		{
-			printf("Unknown packet type received:(%02x).\r\n", pPacketInfo->type);
-		}
+			/* Any other packet type is invalid. */
+			default:
+			{
+				printf("Unknown packet type received:(%02x).\n", pPacketInfo->type);
+			}
 		}
 	}
 }
@@ -128,8 +124,9 @@ int mqtt_transport_yield(uint32_t mqtt_yield_timeout)
 	ret = MQTT_ProcessLoop(&g_mqtt_config.mqtt_context, 60);
 	if (ret != 0)
 	{
-		printf("MQTT_ProcessLoop %d\r\n", ret);
+		printf("MQTT process loop error : %d\n", ret);
 	}
+
 	return ret;
 }
 
@@ -178,7 +175,8 @@ int mqtt_transport_subscribe(uint8_t qos, char *subscribe_topic)
 
 	if (g_mqtt_config.subscribe_count > MQTT_SUBSCRIPTION_MAX_NUM)
 	{
-		printf(" Subscribe_count > MQTT_SUBSCRIPTION_MAX_NUM : %d\r\n", g_mqtt_config.subscribe_count);
+		printf("MQTT subscription count error : %d\n", g_mqtt_config.subscribe_count);
+
 		return -1;
 	}
 
@@ -191,12 +189,13 @@ int mqtt_transport_subscribe(uint8_t qos, char *subscribe_topic)
 
 	if (ret != 0)
 	{
-		printf("MQTT subscription is error : %d\r\n", ret);
+		printf("MQTT subscription is error : %d\n", ret);
+
 		return -1;
 	}
 	else
 	{
-		printf("MQTT subscribe[0] is success\r\n");
+		printf("MQTT subscription is success\n");
 	}
 	g_mqtt_config.subscribe_count++;
 
@@ -219,6 +218,7 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 		if (ret != 1)
 		{
 			mqtt_transport_close(sock, &g_mqtt_config);
+
 			return -1;
 		}
 	}
@@ -229,12 +229,14 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 		if (ret != sock)
 		{
 			mqtt_transport_close(sock, &g_mqtt_config);
+
 			return -1;
 		}
 		ret = connect(sock, g_mqtt_config.mqtt_ip, port);
 		if (ret != SOCK_OK)
 		{
 			mqtt_transport_close(sock, &g_mqtt_config);
+
 			return -1;
 		}
 		g_transport_interface.send = mqtt_write;
@@ -247,12 +249,13 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 		if (ret != 0)
 		{
 			mqtt_transport_close(sock, &g_mqtt_config);
-			printf("SSL initialization error : %d\r\n", ret);
+			printf("SSL initialization error : %d\n", ret);
+
 			return ret;
 		}
 		else
 		{
-			printf("SSL initialization is success\r\n");
+			printf("SSL initialization is success\n");
 		}
 
 		ret = ssl_socket_connect_timeout(tls_context, g_mqtt_config.mqtt_ip, port, 0, MQTT_TIMEOUT);
@@ -260,12 +263,13 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 		if (ret != 0)
 		{
 			mqtt_transport_close(sock, &g_mqtt_config);
-			printf("SSL connection is error : %d\r\n", ret);
+			printf("SSL connection is error : %d\n", ret);
+
 			return ret;
 		}
 		else
 		{
-			printf("SSL connection is success\r\n");
+			printf("SSL connection is success\n");
 		}
 		g_mqtt_tls_context_ptr = tls_context;
 
@@ -287,12 +291,13 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 	if (ret != 0)
 	{
 		mqtt_transport_close(sock, &g_mqtt_config);
-		printf("MQTT initialization is error : %d\r\n", ret);
+		printf("MQTT initialization is error : %d\n", ret);
+
 		return -1;
 	}
 	else
 	{
-		printf("MQTT initialization is success\r\n");
+		printf("MQTT initialization is success\n");
 	}
 
 	/* Connect to the MQTT broker */
@@ -300,13 +305,15 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
 	if (ret != 0)
 	{
 		mqtt_transport_close(sock, &g_mqtt_config);
-		printf("MQTT connection is error : %d\r\n", ret);
+		printf("MQTT connection is error : %d\n", ret);
+
 		return -1;
 	}
 	else
 	{
-		printf("MQTT connection is success\r\n");
+		printf("MQTT connection is success\n");
 	}
+
 	return 0;
 }
 
@@ -355,14 +362,16 @@ int mqtt_transport_publish(uint8_t *pub_topic, uint8_t *pub_data, uint32_t pub_d
 
 	if (ret != 0)
 	{
-		printf("MQTT pulishing is error : %d\r\n", ret);
-		printf("PUBLISH FAILED\r\n");
+		printf("MQTT pulishing is error : %d\n", ret);
+		printf("PUBLISH FAILED\n");
+
 		return -1;
 	}
 	else
 	{
-		printf("MQTT pulishing is success\r\n");
-		printf("PUBLISH OK\r\n");
+		printf("MQTT pulishing is success\n");
+		printf("PUBLISH OK\n");
+
 		return 0;
 	}
 }
@@ -374,7 +383,6 @@ int32_t mqtt_write(NetworkContext_t *pNetworkContext, const void *pBuffer, size_
 	if (getSn_SR(pNetworkContext->socketDescriptor) == SOCK_ESTABLISHED)
 	{
 		size = send(pNetworkContext->socketDescriptor, (uint8_t *)pBuffer, bytesToSend);
-		printf("Size = %d", size);
 	}
 
 	return size;
@@ -391,11 +399,11 @@ int32_t mqtt_read(NetworkContext_t *pNetworkContext, void *pBuffer, size_t bytes
 			size = recv(pNetworkContext->socketDescriptor, pBuffer, bytesToRecv);
 		if (size != 0)
 		{
-			printf("Size = %d\r\n", size);
 			break;
 		}
 		sleep_ms(10);
 	} while ((millis() - tickStart) <= MQTT_TIMEOUT);
+
 	return size;
 }
 

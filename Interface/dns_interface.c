@@ -148,7 +148,6 @@ int8_t get_ipaddr_from_dns(uint8_t *domain, uint8_t *ip_from_dns, uint8_t *buf, 
         ret = DNS_run_handler(dns_server_ip, domain, ip_from_dns, timeout);
 
         // Process the requests of configuration tool during the DNS client run
-        //do_segcp();
         sleep_ms(10);
     } while (ret == DNS_RET_RUNNING);
 
