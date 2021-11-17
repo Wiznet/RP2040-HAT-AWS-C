@@ -163,9 +163,9 @@ Link
 [link-tera_term]: https://osdn.net/projects/ttssh2/releases/
 [link-create_aws_iot_resources]: https://docs.aws.amazon.com/iot/latest/developerguide/create-iot-resources.html
 [link-what_is_aws_iot]: https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html
-[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/Wiznet-OpenHardware/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/raspberry_pi_pico_usb_mass_storage.png
-[link-connect_to_serial_com_port]: https://github.com/Wiznet-OpenHardware/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/connect_to_serial_com_port.png
-[link-see_network_information_of_raspberry_pi_pico_connecting_to_aws_iot_and_publishing_message]: https://github.com/Wiznet-OpenHardware/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/see_network_information_of_raspberry_pi_pico_connecting_to_aws_iot_and_publishing_message.png
-[link-subscribe_to_publish_topic_and_receive_publish_message_through_test_function]: https://github.com/Wiznet-OpenHardware/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/subscribe_to_publish_topic_and_receive_publish_message_through_test_function.png
-[link-publish_message_through_test_function]:https://github.com/Wiznet-OpenHardware/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/publish_message_through_test_function.png
-[link-receive_message_about_subcribe_topic]:https://github.com/Wiznet-OpenHardware/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/receive_message_about_subcribe_topic.png
+[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/raspberry_pi_pico_usb_mass_storage.png
+[link-connect_to_serial_com_port]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/connect_to_serial_com_port.png
+[link-see_network_information_of_raspberry_pi_pico_connecting_to_aws_iot_and_publishing_message]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/see_network_information_of_raspberry_pi_pico_connecting_to_aws_iot_and_publishing_message.png
+[link-subscribe_to_publish_topic_and_receive_publish_message_through_test_function]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/subscribe_to_publish_topic_and_receive_publish_message_through_test_function.png
+[link-publish_message_through_test_function]:https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/publish_message_through_test_function.png
+[link-receive_message_about_subcribe_topic]:https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/receive_message_about_subcribe_topic.png
