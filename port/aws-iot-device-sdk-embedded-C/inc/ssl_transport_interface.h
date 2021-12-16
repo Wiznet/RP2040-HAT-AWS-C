@@ -7,6 +7,13 @@
 #ifndef _SSL_TRANSPORT_INTERFACE_H_
 #define _SSL_TRANSPORT_INTERFACE_H_
 
+/*
+ * ----------------------------------------------------------------------------------------------------
+ * Includes
+ * ----------------------------------------------------------------------------------------------------
+ */
+#include <stdlib.h>
+
 #if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
 #else
@@ -19,13 +26,21 @@
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/compat-1.3.h"
 
-#include <stdlib.h>
-
+/*
+ * ----------------------------------------------------------------------------------------------------
+ * Macros
+ * ----------------------------------------------------------------------------------------------------
+ */
 #define DEBUG_LEVEL 3
-
 #define DEBUG_BUFFER_SIZE 1024
+
 #define SSL_RECV_TIMEOUT_VALUE 10000
 
+/*
+ * ----------------------------------------------------------------------------------------------------
+ * Variables
+ * ----------------------------------------------------------------------------------------------------
+ */
 typedef struct
 {
 #if defined(MBEDTLS_ENTROPY_C)
@@ -44,19 +59,14 @@ typedef struct
     uint8_t clica_option;
 } tlsContext_t;
 
+/*
+ * ----------------------------------------------------------------------------------------------------
+ * Functions
+ * ----------------------------------------------------------------------------------------------------
+ */
 int ssl_random_callback(void *p_rng, unsigned char *output, size_t output_len);
 int recv_timeout(void *ctx, unsigned char *buf, size_t len, uint32_t timeout);
-
 #if defined(MBEDTLS_DEBUG_C)
-/*
- * name: WIZnetDebugCB
- * brief: printf callback function for debug
- * param ctx: Context for callback - ignored
- * param level: debug level - 0/1/2/3(0 is no debug)
- * param file: file pointer - ignored
- * param line: - ignored
- * param str: debug message pointer
- */
 void WIZnetDebugCB(void *ctx, int level, const char *file, int line, const char *str);
 #endif
 int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *host);
@@ -70,4 +80,4 @@ int ssl_transport_session_reset(tlsContext_t *tlsContext);
 int ssl_transport_check_ca(uint8_t *ca_data, uint32_t ca_len);
 int ssl_transport_check_pkey(uint8_t *pkey_data, uint32_t pkey_len);
 
-#endif /* _SSL_TRANSPORT_INTERFACE_H_ */
+#endif
