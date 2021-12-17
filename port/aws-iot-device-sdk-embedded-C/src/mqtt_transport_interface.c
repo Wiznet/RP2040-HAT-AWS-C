@@ -9,6 +9,10 @@
  * Includes
  * ----------------------------------------------------------------------------------------------------
  */
+#include <string.h>
+
+#include "pico/stdlib.h"
+
 #include "ssl_transport_interface.h"
 #include "mqtt_transport_interface.h"
 
@@ -291,7 +295,7 @@ int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf,
     /* Initialize MQTT context */
     ret = MQTT_Init(&g_mqtt_config.mqtt_context,
                     &g_transport_interface,
-                    millis,
+                    (MQTTGetCurrentTimeFunc_t)millis,
                     mqtt_event_callback,
                     &g_mqtt_config.mqtt_fixed_buf);
 
