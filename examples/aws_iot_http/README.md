@@ -26,7 +26,7 @@ If you are using W5100S-EVB-Pico, you can skip '1. Combine...'
 
 To test the HTTP & HTTPS example, minor settings shall be done in code.
 
-1. Set SPI port and pin.
+1. Setup SPI port and pin in 'w5x00_spi.h' in 'RP2040-HAT-AWS-C/port/ioLibrary_Driver/' directory.
 
 Set the SPI interface you use.
 
@@ -48,7 +48,7 @@ If you want to test with the HTTP & HTTPS example using SPI DMA, uncommnet USE_S
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 ```
 
-2. Set network configuration such as IP.
+2. Setup network configuration such as IP in 'aws_iot_http.c' , which is the HTTP & HTTPS example in 'RP2040-HAT-AWS-C/examples/aws_iot_http/' directory.
 
 We are going to use DHCP. However, If you want to use 'Static IP' set the IP and other network settings to suit your network environment.
 
@@ -65,36 +65,11 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Input address.
-
-Input an HTTP or HTTPS address in this macro.
+3. Enter the URL you want to connect to.
 
 ```cpp
-#define HTTP_GET_URL   "https://www.wiznet.io/"
-```
-
-4. Set-up device certificate and key.
-
-If you want to change root certificate, client certificate and private key, you need to change the below sections.
-
-Device certificate and key can be set in http_certificate.h in 'RP2040-HAT-AWS-C/Interface/' directory.
-
-```cpp
-uint8_t http_root_ca[] =
-"-----BEGIN CERTIFICATE-----\r\n"
-"...\r\n"
-"-----END CERTIFICATE-----\r\n";
-
-uint8_t http_client_cert[] =
-"-----BEGIN CERTIFICATE-----\r\n"
-"...\r\n"
-"-----END CERTIFICATE-----\r\n";
-
-uint8_t http_private_key[] =
-"-----BEGIN RSA PRIVATE KEY-----\r\n"
-"...\r\n"
-"-----END RSA PRIVATE KEY-----\r\n";
-
+/* HTTP */
+#define HTTP_GET_URL "URL"
 ```
 
 
@@ -121,7 +96,7 @@ uint8_t http_private_key[] =
 
 4. Reset your board.
 
-5. If the HTTP & HTTPS example works normally, you can see the **wiznet.io server IP** and **cipher suite**.
+5. If the HTTP & HTTPS example works normally, You can see the IP got from the URL and the cipher suite applied when connecting.
 
 ![][link-server_ip_ciphersuite]
 
@@ -137,6 +112,6 @@ Link
 
 [link-tera_term]: https://osdn.net/projects/ttssh2/releases/
 [link-raspberry_pi_pico_usb_mass_storage]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_http/raspberry_pi_pico_usb_mass_storage.png
-[link-connect_to_serial_com_port]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_http/serial_com_port.png
+[link-connect_to_serial_com_port]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_http/connect_to_serial_com_port.png
 [link-server_ip_ciphersuite]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_http/server_ip_ciphersuite.png
 [link-http_body_information]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_http/http_body_information.png

@@ -40,7 +40,7 @@ For more information on AWS IoT, refer to the document below.
 
 To test the Connect AWS IoT through MQTT example, minor settings shall be done in code.
 
-1. Setup SPI port and pin.
+1. Setup SPI port and pin in 'w5x00_spi.h' in 'RP2040-HAT-AWS-C/port/ioLibrary_Driver/' directory.
 
 Setup the SPI interface you use.
 
@@ -62,7 +62,7 @@ If you want to test with the Connect AWS IoT through MQTT example using SPI DMA,
 //#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 ```
 
-2. Setup network configuration such as IP.
+2. Setup network configuration such as IP in 'aws_iot_mqtt.c' , which is the Connect AWS IoT through MQTT example in 'RP2040-HAT-AWS-C/examples/aws_iot_mqtt/' directory.
 
 Setup IP, other network settings to suit your network environment and whether to use DHCP.
 
@@ -86,8 +86,8 @@ MQTT_DOMAIN should be setup as AWS IoT data endpoint, and MQTT_USERNAME and MQTT
 ```cpp
 /* AWS IoT */
 #define MQTT_DOMAIN "account-specific-prefix-ats.iot.ap-northeast-2.amazonaws.com"
-#define MQTT_PUB_TOPIC "$aws/things/rp2040/shadow/update"
-#define MQTT_SUB_TOPIC "$aws/things/rp2040/shadow/update/accepted"
+#define MQTT_PUB_TOPIC "$aws/things/my_rp2040_thing/shadow/update"
+#define MQTT_SUB_TOPIC "$aws/things/my_rp2040_thing/shadow/update/accepted"
 #define MQTT_USERNAME NULL
 #define MQTT_PASSWORD NULL
 #define MQTT_CLIENT_ID "my_rp2040_thing"
@@ -99,7 +99,7 @@ You must enter the root certificate, client certificate and private key that wer
 
 Root certificate uses the RSA 2048 bit key, Amazon Root CA 1, and does not use the public key.
 
-Device certificate and key can be set in mqtt_certificate.h in 'RP2040-HAT-AWS-C/Interface/' directory.
+Device certificate and key can be set in mqtt_certificate.h in 'RP2040-HAT-AWS-C/examples/aws_iot_mqtt/' directory.
 
 ```cpp
 uint8_t mqtt_root_ca[] =

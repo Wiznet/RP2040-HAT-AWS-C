@@ -23,8 +23,6 @@
 #include "ssl_transport_interface.h"
 #include "timer_interface.h"
 
-//#include "http_certificate.h" // if you want to setup certificate, uncomment.
-
 /**
   * ----------------------------------------------------------------------------------------------------
   * Macros
@@ -60,12 +58,12 @@ static uint8_t g_ethernet_buf[ETHERNET_BUF_MAX_SIZE] = {
 }; // common buffer
 
 /* HTTP */
-uint8_t g_http_buf[HTTP_BUF_MAX_SIZE] = {
+static uint8_t g_http_buf[HTTP_BUF_MAX_SIZE] = {
     0,
 };
 
 /* SSL */
-tlsContext_t g_http_tls_context;
+static tlsContext_t g_http_tls_context;
 
 /**
   * ----------------------------------------------------------------------------------------------------

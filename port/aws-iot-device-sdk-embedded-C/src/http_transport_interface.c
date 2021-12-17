@@ -53,7 +53,7 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
     /* Return value of this method. */
     int32_t returnStatus = 0;
 
-    int32_t currentReceived = 0;
+    uint32_t currentReceived = 0;
     uint32_t currentTotalLen = 0;
 
     /* Configurations of the initial request headers that are passed to
