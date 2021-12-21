@@ -65,7 +65,7 @@ static wiz_NetInfo g_net_info =
 };
 ```
 
-3. Enter the URL you want to connect to.
+3. Setup URL you want to connect to.
 
 ```cpp
 /* HTTP */
