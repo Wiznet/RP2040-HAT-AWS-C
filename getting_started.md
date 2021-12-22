@@ -172,7 +172,7 @@ RP2040-HAT-AWS-C
     ┃   ┃   ┣ ssl_transport_interface.h
     ┃   ┃   ┣ timer_interface.h
     ┃   ┃   ┗ util.h
-	┃   ┗ src
+    ┃   ┗ src
     ┃   ┃   ┣ dns_interface.c
     ┃   ┃   ┣ http_transport_interface.c
     ┃   ┃   ┣ mqtt_transport_interface.c
