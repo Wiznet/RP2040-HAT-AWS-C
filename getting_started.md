@@ -160,36 +160,36 @@ We moved the MCU dependent code to the port directory. The tree of port is shown
 
 ```
 RP2040-HAT-AWS-C
-¦² port
-    ¦² aws-iot-device-sdk-embedded-C
-    ¦­   ¦² inc
-    ¦­   ¦­   ¦² core_http_config.h
-    ¦­   ¦­   ¦² core_mqtt_config.h
-    ¦­   ¦­   ¦² dns_config.h
-    ¦­   ¦­   ¦² dns_interface.h
-    ¦­   ¦­   ¦² http_transport_interface.h
-    ¦­   ¦­   ¦² mqtt_transport_interface.h
-    ¦­   ¦­   ¦² ssl_transport_interface.h
-    ¦­   ¦­   ¦² timer_interface.h
-    ¦­   ¦­   ¦± util.h
-	¦­   ¦± src
-    ¦­   ¦­   ¦² dns_interface.c
-    ¦­   ¦­   ¦² http_transport_interface.c
-    ¦­   ¦­   ¦² mqtt_transport_interface.c
-    ¦­   ¦­   ¦² ssl_transport_interface.c
-    ¦­   ¦­   ¦² timer_interface.c
-    ¦­   ¦­   ¦± util.c
-    ¦² ioLibrary_Driver
-    ¦­   ¦² w5x00_spi.c
-    ¦­   ¦± w5x00_spi.h
-    ¦² mbedtls
-    ¦­   ¦± inc
-    ¦­   ¦­   ¦± ssl_config.h
-    ¦² timer
-    ¦­   ¦² timer.c
-    ¦­   ¦± timer.h
-    ¦² CMakeLists.txt
-    ¦± port_common.h
+â”£ port
+    â”£ aws-iot-device-sdk-embedded-C
+    â”ƒ   â”£ inc
+    â”ƒ   â”ƒ   â”£ core_http_config.h
+    â”ƒ   â”ƒ   â”£ core_mqtt_config.h
+    â”ƒ   â”ƒ   â”£ dns_config.h
+    â”ƒ   â”ƒ   â”£ dns_interface.h
+    â”ƒ   â”ƒ   â”£ http_transport_interface.h
+    â”ƒ   â”ƒ   â”£ mqtt_transport_interface.h
+    â”ƒ   â”ƒ   â”£ ssl_transport_interface.h
+    â”ƒ   â”ƒ   â”£ timer_interface.h
+    â”ƒ   â”ƒ   â”— util.h
+	â”ƒ   â”— src
+    â”ƒ   â”ƒ   â”£ dns_interface.c
+    â”ƒ   â”ƒ   â”£ http_transport_interface.c
+    â”ƒ   â”ƒ   â”£ mqtt_transport_interface.c
+    â”ƒ   â”ƒ   â”£ ssl_transport_interface.c
+    â”ƒ   â”ƒ   â”£ timer_interface.c
+    â”ƒ   â”ƒ   â”— util.c
+    â”£ ioLibrary_Driver
+    â”ƒ   â”£ w5x00_spi.c
+    â”ƒ   â”— w5x00_spi.h
+    â”£ mbedtls
+    â”ƒ   â”— inc
+    â”ƒ   â”ƒ   â”— ssl_config.h
+    â”£ timer
+    â”ƒ   â”£ timer.c
+    â”ƒ   â”— timer.h
+    â”£ CMakeLists.txt
+    â”— port_common.h
 ```
 
 - **ioLibrary_Driver**
