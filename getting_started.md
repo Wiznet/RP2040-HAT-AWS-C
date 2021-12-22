@@ -115,22 +115,7 @@ cd [user path]/RP2040-HAT-AWS-C/libraries/ioLibrary_Driver
 cd D:/RP2040/RP2040-HAT-AWS-C/libraries/ioLibrary_Driver
 
 /* Patch */
-git apply ../../patches/01_ethernet_chip.patch
-git apply ../../patches/02_ftp_client.patch
-```
-
-- mbedtls
-
-```cpp
-/* Change directory */
-// change to the 'mbedtls' library directory
-cd [user path]/RP2040-HAT-AWS-C/libraries/mbedtls
-
-// e.g.
-cd D:/RP2040/RP2040-HAT-AWS-C/libraries/mbedtls
-
-/* Patch */
-git apply --ignore-whitespace ../../patches/03_mbedtls_test_mode.patch
+git apply ../../patches/01_iolibrary_driver_ethernet_chip.patch
 ```
 
 - aws-iot-device-sdk-embedded-C
@@ -144,7 +129,7 @@ cd [user path]/RP2040-HAT-AWS-C/libraries/aws-iot-device-sdk-embedded-C/librarie
 cd D:/RP2040/RP2040-HAT-AWS-C/libraries/aws-iot-device-sdk-embedded-C/libraries/standard/coreHTTP
 
 /* Patch */
-git apply --ignore-whitespace ../../../../../patches/04_corehttp_network_interface.patch
+git apply --ignore-whitespace ../../../../../patches/02_aws_iot_device_sdk_embedded_c_corehttp_network_interface.patch
 ```
 
 3. Test
