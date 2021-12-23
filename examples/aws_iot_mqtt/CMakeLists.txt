@@ -1,30 +1,25 @@
-add_executable(aws_iot_mqtt
-        aws_iot_mqtt.c
-    )
+set(TARGET_NAME aws_iot_mqtt)
 
-target_include_directories(aws_iot_mqtt PUBLIC
-        ${CMAKE_SOURCE_DIR}/libraries/ioLibrary_Driver/Ethernet
-        ${CMAKE_SOURCE_DIR}/libraries/ioLibrary_Driver/Internet/dhcp
-        ${CMAKE_SOURCE_DIR}/libraries/ioLibrary_Driver/Internet/dns
-        ${CMAKE_SOURCE_DIR}/libraries/mbedtls/include
-        ${CMAKE_SOURCE_DIR}/libraries/mbedtls/library
-        ${CMAKE_SOURCE_DIR}/interface
-        )
+add_executable(${TARGET_NAME}
+        ${TARGET_NAME}.c
+	    )
 
-target_link_libraries(aws_iot_mqtt PUBLIC
+target_link_libraries(${TARGET_NAME} PRIVATE
         pico_stdlib
         hardware_spi
         hardware_dma
         ETHERNET_FILES
+        SPI_FILES
         DHCP_FILES
         DNS_FILES
-        INTERFACE_FILES
+        AWS_SDK_PORT_FILES
+        TIMER_FILES
         mbedcrypto
         mbedx509
         mbedtls
         )
 
-pico_enable_stdio_usb(aws_iot_mqtt 1)
-pico_enable_stdio_uart(aws_iot_mqtt 0)
+pico_enable_stdio_usb(${TARGET_NAME} 1)
+pico_enable_stdio_uart(${TARGET_NAME} 0)
 
-pico_add_extra_outputs(aws_iot_mqtt)
+pico_add_extra_outputs(${TARGET_NAME})

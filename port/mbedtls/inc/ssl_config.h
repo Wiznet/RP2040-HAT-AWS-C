@@ -62,7 +62,6 @@
 #define MBEDTLS_CIPHER_C
 #define MBEDTLS_CTR_DRBG_C
 #define MBEDTLS_DHM_C
-//#define MBEDTLS_ENTROPY_C
 #define MBEDTLS_GCM_C
 #define MBEDTLS_MD_C
 #define MBEDTLS_MD5_C

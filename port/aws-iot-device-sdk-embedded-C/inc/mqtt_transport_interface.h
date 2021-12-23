@@ -13,10 +13,11 @@
  * ----------------------------------------------------------------------------------------------------
  */
 #include "socket.h"
-#include "core_mqtt.h"
-#include "core_mqtt_state.h"
+
 #include "transport_interface.h"
 #include "ssl_transport_interface.h"
+#include "core_mqtt.h"
+#include "core_mqtt_state.h"
 #include "core_mqtt_config.h"
 
 /*
@@ -24,7 +25,6 @@
  * Macros
  * ----------------------------------------------------------------------------------------------------
  */
-
 typedef enum
 {
     MQTT_IDLE = 0,
@@ -55,7 +55,6 @@ typedef struct __mqtt_config
  * Functions
  * ----------------------------------------------------------------------------------------------------
  */
-
 void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo, MQTTDeserializedInfo_t *pDeserializedInfo);
 int mqtt_transport_yield(uint32_t mqtt_yield_timeout);
 int8_t mqtt_transport_init(uint8_t cleanSession, uint8_t *ClientId, uint8_t *userName, uint8_t *password, uint32_t keepAlive);

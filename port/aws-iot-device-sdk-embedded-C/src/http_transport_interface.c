@@ -10,6 +10,7 @@
  * ----------------------------------------------------------------------------------------------------
  */
 #include <stdio.h>
+#include <ctype.h>
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
@@ -17,9 +18,16 @@
 #include "http_transport_interface.h"
 #include "http_parser.h"
 #include "core_http_client_private.h"
-#include "timer_interface.h"
+
 #include "dns_interface.h"
+#include "timer_interface.h"
 #include "util.h"
+
+/**
+  * ----------------------------------------------------------------------------------------------------
+  * Macros
+  * ----------------------------------------------------------------------------------------------------
+  */
 
 /*
  * ----------------------------------------------------------------------------------------------------
@@ -45,6 +53,9 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
     /* Return value of this method. */
     int32_t returnStatus = 0;
 
+    uint32_t currentReceived = 0;
+    uint32_t currentTotalLen = 0;
+
     /* Configurations of the initial request headers that are passed to
 	 * #HTTPClient_InitializeRequestHeaders. */
     HTTPRequestInfo_t requestInfo;
@@ -57,9 +68,9 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
     HTTPStatus_t httpStatus = HTTPSuccess;
 
     /* Initialize all HTTP Client library API structs to 0. */
-    (void)memset(&requestInfo, 0x00, sizeof(requestInfo));
-    (void)memset(&response, 0x00, sizeof(response));
-    (void)memset(&requestHeaders, 0x00, sizeof(requestHeaders));
+    (void)memset(&requestInfo, 0, sizeof(requestInfo));
+    (void)memset(&response, 0, sizeof(response));
+    (void)memset(&requestHeaders, 0, sizeof(requestHeaders));
 
     /* Initialize the request object. */
     requestInfo.pHost = http_config->http_domain;
@@ -84,7 +95,7 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
 
     response.pBuffer = buffer;
     response.bufferLen = HTTP_BUF_MAX_SIZE;
-    response.getTime = millis;
+    response.getTime = (HTTPClient_GetCurrentTimeFunc_t)millis;
 
     httpStatus = HTTPClient_InitializeRequestHeaders(&requestHeaders, &requestInfo);
     if (httpStatus != HTTPSuccess)
@@ -128,30 +139,27 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
                                      http_config->bodyLen,
                                      &response,
                                      0);
-
-        printf("Response Headers Length: %d\n", response.headersLen);
-        printf("Response Content Length: %d\n", response.contentLength);
-        printf("Response Body Length: %d\n", response.bodyLen);
-        printf("Response Body:\n%.*s\n", response.bodyLen, response.pBody);
     }
     else
     {
         printf("Failed to initialize HTTP request headers: Error=%s.\n", HTTPClient_strerror(httpStatus));
     }
 
-    int currentReceived = 0U;
-    uint32_t currentTotalLen = response.bodyLen;
+    printf("Response Headers Length: %d\n", response.headersLen);
+    printf("Response Content Length: %d\n\n", response.contentLength);
+
+    currentTotalLen = response.bodyLen;
 
     if (httpStatus == HTTPInsufficientMemory)
     {
         printf("Response buffer has insufficient\n");
-        printf("Response Content Length: %d\n", response.contentLength);
+        printf("Response Content Length: %d\n\n", response.contentLength);
         printf("Response Body Length: %d\n", response.bodyLen);
         printf("Response Body:\n%.*s\n", response.bodyLen, response.pBody);
 
         while (1)
         {
-            memset(buffer, NULL, HTTP_BUF_MAX_SIZE);
+            memset(buffer, 0, HTTP_BUF_MAX_SIZE);
             currentReceived = pTransportInterface->recv(pTransportInterface->pNetworkContext, buffer, HTTP_BUF_MAX_SIZE);
 
             printf("Current Received: %d\n", currentReceived);
@@ -286,7 +294,7 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
 
     if (g_http_config.http_state != HTTP_IDLE)
         return -1;
-    memset(&g_http_config, 0x00, sizeof(http_config_t));
+    memset(&g_http_config, 0, sizeof(http_config_t));
     g_http_config.http_state = HTTP_RUNNING;
 
     ret = is_https(http_url);
@@ -310,8 +318,8 @@ int32_t http_get(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *tl
         return -1;
     }
 
-    memset(g_http_config.http_path, NULL, HTTP_DOMAIN_MAX_SIZE);
-    memset(g_http_config.http_domain, NULL, HTTP_DOMAIN_MAX_SIZE);
+    memset(g_http_config.http_path, 0, HTTP_DOMAIN_MAX_SIZE);
+    memset(g_http_config.http_domain, 0, HTTP_DOMAIN_MAX_SIZE);
 
     memcpy(g_http_config.http_path, pPath, pPathLen);
     g_http_config.http_path_len = pPathLen;
@@ -391,7 +399,7 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
 
     if (g_http_config.http_state != HTTP_IDLE)
         return -1;
-    memset(&g_http_config, 0x00, sizeof(http_config_t));
+    memset(&g_http_config, 0, sizeof(http_config_t));
     g_http_config.http_state = HTTP_RUNNING;
 
     ret = is_https(http_url);
@@ -415,8 +423,8 @@ int32_t http_post(uint8_t sock, uint8_t *buffer, char *http_url, tlsContext_t *t
         return -1;
     }
 
-    memset(g_http_config.http_path, NULL, HTTP_DOMAIN_MAX_SIZE);
-    memset(g_http_config.http_domain, NULL, HTTP_DOMAIN_MAX_SIZE);
+    memset(g_http_config.http_path, 0, HTTP_DOMAIN_MAX_SIZE);
+    memset(g_http_config.http_domain, 0, HTTP_DOMAIN_MAX_SIZE);
 
     memcpy(g_http_config.http_path, pPath, pPathLen);
     g_http_config.http_path_len = pPathLen;
@@ -618,7 +626,7 @@ int is_https(const char *pUrl)
     uint8_t temp_buf[8];
     uint32_t i;
 
-    memset(temp_buf, NULL, 8);
+    memset(temp_buf, 0, sizeof(temp_buf));
     for (i = 0; i < 5; i++)
         temp_buf[i] = tolower(pUrl[i]);
 

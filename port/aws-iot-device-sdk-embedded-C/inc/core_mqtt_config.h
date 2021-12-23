@@ -30,13 +30,6 @@
 /* Subscription number */
 #define MQTT_SUBSCRIPTION_MAX_NUM 3
 
-#if 0
-#define LogError(message) printf message
-#define LogWarn(message) printf message
-#define LogInfo(message) printf message
-#define LogDebug(message) printf message
-#endif
-
 /*
  * ----------------------------------------------------------------------------------------------------
  * Variables
