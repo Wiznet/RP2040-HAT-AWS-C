@@ -42,7 +42,7 @@ typedef struct __mqtt_config
     uint8_t subscribe_count;
     uint8_t mqtt_ip[4];
     uint8_t ssl_flag;
-} mqtt_config_t __attribute__((packed));
+} mqtt_config_t;
 
 /*
  * ----------------------------------------------------------------------------------------------------

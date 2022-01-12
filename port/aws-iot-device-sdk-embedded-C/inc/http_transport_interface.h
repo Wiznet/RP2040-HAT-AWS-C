@@ -59,7 +59,7 @@ typedef struct __http_config
     uint8_t ssl_flag;
     char *bodyDataPtr;
     uint32_t bodyLen;
-} http_config_t __attribute__((packed));
+} http_config_t;
 
 /*
  * ----------------------------------------------------------------------------------------------------
