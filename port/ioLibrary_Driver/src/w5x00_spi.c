@@ -1,14 +1,14 @@
 /**
- * Copyright (c) 2021 WIZnet Co.,Ltd
+ * Copyright (c) 2022 WIZnet Co.,Ltd
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 /**
-  * ----------------------------------------------------------------------------------------------------
-  * Includes
-  * ----------------------------------------------------------------------------------------------------
-  */
+ * ----------------------------------------------------------------------------------------------------
+ * Includes
+ * ----------------------------------------------------------------------------------------------------
+ */
 #include <stdio.h>
 
 #include "port_common.h"
@@ -17,10 +17,10 @@
 #include "w5x00_spi.h"
 
 /**
-  * ----------------------------------------------------------------------------------------------------
-  * Variables
-  * ----------------------------------------------------------------------------------------------------
-  */
+ * ----------------------------------------------------------------------------------------------------
+ * Variables
+ * ----------------------------------------------------------------------------------------------------
+ */
 static critical_section_t g_wizchip_cri_sec;
 
 #ifdef USE_SPI_DMA
@@ -31,10 +31,10 @@ static dma_channel_config dma_channel_config_rx;
 #endif
 
 /**
-  * ----------------------------------------------------------------------------------------------------
-  * Functions
-  * ----------------------------------------------------------------------------------------------------
-  */
+ * ----------------------------------------------------------------------------------------------------
+ * Functions
+ * ----------------------------------------------------------------------------------------------------
+ */
 static inline void wizchip_select(void)
 {
     gpio_put(PIN_CS, 0);
@@ -194,7 +194,13 @@ void wizchip_initialize(void)
 
     /* W5x00 initialize */
     uint8_t temp;
+
+#if _WIZCHIP_ == W5100S
     uint8_t memsize[2][4] = {{2, 2, 2, 2}, {2, 2, 2, 2}};
+#elif _WIZCHIP_ == W5500
+    uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+
+#endif    
 
     if (ctlwizchip(CW_INIT_WIZCHIP, (void *)memsize) == -1)
     {
@@ -270,19 +276,4 @@ void print_network_information(wiz_NetInfo net_info)
     printf(" Gateway     : %d.%d.%d.%d\n", net_info.gw[0], net_info.gw[1], net_info.gw[2], net_info.gw[3]);
     printf(" DNS         : %d.%d.%d.%d\n", net_info.dns[0], net_info.dns[1], net_info.dns[2], net_info.dns[3]);
     printf("====================================================================================================\n\n");
-}
-
-void set_clock_khz(void)
-{
-    // set a system clock frequency in khz
-    set_sys_clock_khz(PLL_SYS_KHZ, true);
-
-    // configure the specified clock
-    clock_configure(
-        clk_peri,
-        0,                                                // No glitchless mux
-        CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS, // System PLL on AUX mux
-        PLL_SYS_KHZ * 1000,                               // Input frequency
-        PLL_SYS_KHZ * 1000                                // Output (must be same as no divider)
-    );
 }
