@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Includes
  * ----------------------------------------------------------------------------------------------------
@@ -26,18 +26,18 @@
 #include "timer_interface.h"
 
 /**
-  * ----------------------------------------------------------------------------------------------------
-  * Macros
-  * ----------------------------------------------------------------------------------------------------
-  */
+ * ----------------------------------------------------------------------------------------------------
+ * Macros
+ * ----------------------------------------------------------------------------------------------------
+ */
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Variables
  * ----------------------------------------------------------------------------------------------------
  */
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Functions
  * ----------------------------------------------------------------------------------------------------
@@ -102,8 +102,8 @@ int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *hos
 #endif
 
     /*
-		Initialize session data
-	*/
+        Initialize session data
+    */
 
 #if defined(MBEDTLS_ENTROPY_C)
     mbedtls_entropy_init(&tlsContext->entropy);
@@ -117,8 +117,8 @@ int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *hos
     mbedtls_pk_init(&tlsContext->pkey);
 
     /*
-		Initialize certificates
-	*/
+        Initialize certificates
+    */
 #if defined(MBEDTLS_ENTROPY_C)
     if ((ret = mbedtls_ctr_drbg_seed(&tlsContext->ctr_drbg, mbedtls_entropy_func, &tlsContext->entropy,
                                      (const unsigned char *)pers, strlen(pers))) != 0)
@@ -134,8 +134,8 @@ int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *hos
 #endif
 
     /*
-		Parse certificate
-	*/
+        Parse certificate
+    */
     if (tlsContext->rootca_option != MBEDTLS_SSL_VERIFY_NONE)
     {
         ret = mbedtls_x509_crt_parse(&tlsContext->cacert, (const unsigned char *)tlsContext->root_ca, strlen(tlsContext->root_ca) + 1);

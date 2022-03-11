@@ -48,7 +48,7 @@ target_sources(AWS_SDK_PORT_FILES PUBLIC
 
 target_include_directories(AWS_SDK_PORT_FILES PUBLIC
         ${PORT_DIR}/aws-iot-device-sdk-embedded-C/inc
-        ${MBEDTLS_DIR}/include
+        ${MBEDTLS_LIB_DIR}/include
         )
 
 target_link_libraries(AWS_SDK_PORT_FILES PUBLIC
