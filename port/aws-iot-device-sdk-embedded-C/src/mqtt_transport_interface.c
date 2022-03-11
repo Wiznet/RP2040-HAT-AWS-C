@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Includes
  * ----------------------------------------------------------------------------------------------------
@@ -21,12 +21,12 @@
 #include "util.h"
 
 /**
-  * ----------------------------------------------------------------------------------------------------
-  * Macros
-  * ----------------------------------------------------------------------------------------------------
-  */
+ * ----------------------------------------------------------------------------------------------------
+ * Macros
+ * ----------------------------------------------------------------------------------------------------
+ */
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Variables
  * ----------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ mqtt_config_t g_mqtt_config;
 /* SSL context pointer */
 tlsContext_t *g_mqtt_tls_context_ptr;
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Functions
  * ----------------------------------------------------------------------------------------------------
@@ -47,8 +47,8 @@ tlsContext_t *g_mqtt_tls_context_ptr;
 void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo, MQTTDeserializedInfo_t *pDeserializedInfo)
 {
     /* Handle incoming publish. The lower 4 bits of the publish packet
-	 * type is used for the dup, QoS, and retain flags. Hence masking
-	 * out the lower bits to check if the packet is publish. */
+     * type is used for the dup, QoS, and retain flags. Hence masking
+     * out the lower bits to check if the packet is publish. */
     if ((pPacketInfo->type & 0xF0U) == MQTT_PACKET_TYPE_PUBLISH)
     {
         /* Handle incoming publish. */

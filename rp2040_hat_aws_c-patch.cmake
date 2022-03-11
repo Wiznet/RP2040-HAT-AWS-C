@@ -102,26 +102,11 @@ endif()
 
 execute_process(COMMAND ${GIT_EXECUTABLE} -C ${PICO_SDK_SRC_DIR} submodule update --init)
 
-# ioLibrary_Driver patch
-message("submodules ioLibrary_Driver initialised")
-
-file(GLOB IOLIBRARY_DRIVER_PATCHES 
-	"${RP2040_HAT_AWS_C_PATCH_DIR}/01_iolibrary_driver_ethernet_chip.patch" 
-	)
-
-foreach(IOLIBRARY_DRIVER_PATCH IN LISTS IOLIBRARY_DRIVER_PATCHES)
-	message("Running patch ${IOLIBRARY_DRIVER_PATCH}")
-	execute_process(
-		COMMAND ${GIT_EXECUTABLE} apply ${IOLIBRARY_DRIVER_PATCH}
-		WORKING_DIRECTORY ${IOLIBRARY_DRIVER_SRC_DIR}
-	)
-endforeach()
-
 # coreHTTP patch
 message("submodules aws-iot-device-sdk-embedded-C coreHTTP initialised")
 
 file(GLOB AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCHES 
-	"${RP2040_HAT_AWS_C_PATCH_DIR}/02_aws_iot_device_sdk_embedded_c_corehttp_network_interface.patch"
+	"${RP2040_HAT_AWS_C_PATCH_DIR}/01_aws_iot_device_sdk_embedded_c_corehttp_network_interface.patch"
 	)
 
 foreach(AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCH IN LISTS AWS_IOT_DEVICE_SDK_EMBEDDED_C_COREHTTP_PATCHES)

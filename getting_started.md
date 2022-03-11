@@ -13,7 +13,7 @@ These sections will guide you through a series of steps from configuring develop
 <a name="development_environment_configuration"></a>
 ## Development environment configuration
 
-To test the AWS IoT SDK examples, the development environment must be configured to use Raspberry Pi Pico or W5100S-EVB-Pico.
+To test the AWS IoT SDK examples, the development environment must be configured to use Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico.
 
 The AWS IoT SDK examples were tested by configuring the development environment for **Windows**. Please refer to the '**9.2. Building on MS Windows**' section of '**Getting started with Raspberry Pi Pico**' document below and configure accordingly.
 
@@ -26,7 +26,7 @@ The AWS IoT SDK examples were tested by configuring the development environment 
 <a name="hardware_requirements"></a>
 ## Hardware requirements
 
-The AWS IoT SDK examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip.
+The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5500-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5500**][link-w5500] ethernet chip.
 
 - [**Raspberry Pi Pico**][link-raspberry_pi_pico]
 
@@ -39,6 +39,8 @@ The AWS IoT SDK examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** -
 - [**W5100S-EVB-Pico**][link-w5100s-evb-pico]
 
 ![][link-w5100s-evb-pico_main]
+
+- **W5500-EVB-Pico**
 
 
 
@@ -73,7 +75,7 @@ If you want to modify the code that MCU-dependent and use a MCU other than **RP2
 - [**aws-iot-device-sdk-embedded-C**][link-port_aws_iot_device_sdk_embedded_c]
 - [**timer**][link-port_timer]
 
-The structure of this **RP2040-HAT-C 2.0.0** version has changed a lot compared to the previous version. If you want to refer to the previous version, please refer to the link below.
+The structure of this RP2040-HAT-C 2.0.0 version or higher has changed a lot compared to the previous version. If you want to refer to the previous version, please refer to the link below.
 
 - [**RP2040-HAT-AWS-C 1.0.0 version**][link-rp2040_hat_aws_c_1_0_0_version]
 
@@ -100,23 +102,31 @@ git clone --recurse-submodules https://github.com/Wiznet/RP2040-HAT-AWS-C.git
 
 With Visual Studio Code, the library set as a submodule is automatically downloaded, so it doesn't matter whether the library set as a submodule is an empty directory or not, so refer to it.
 
-2. Patch
+2. Setup ethetnet chip
 
-With Visual Studio Code, each library set as a submodule is automatically patched, but if you do not use Visual Studio Code, each library set as a submodule must be manually patched with the Git commands below in each library directory.
+Setup the ethernet chip in '**CMakeLists.txt**' in '**RP2040-HAT-AWS-C/**' directory according to the evaluation board to be used referring to the following.
 
-- ioLibrary_Driver
+- WIZnet Ethernet HAT : W5100S
+- W5100S-EVB-Pico : W5100S
+- W5500-EVB-Pico : W5500
+
+For example, when using WIZnet Ethernet HAT or W5100S-EVB-Pico :
 
 ```cpp
-/* Change directory */
-// change to the 'ioLibrary_Driver' library directory
-cd [user path]/RP2040-HAT-AWS-C/libraries/ioLibrary_Driver
-
-// e.g.
-cd D:/RP2040/RP2040-HAT-AWS-C/libraries/ioLibrary_Driver
-
-/* Patch */
-git apply ../../patches/01_iolibrary_driver_ethernet_chip.patch
+# Set ethernet chip
+set(WIZNET_CHIP W5100S)
 ```
+
+When using W5500-EVB-Pico :
+
+```cpp
+# Set ethernet chip
+set(WIZNET_CHIP W5500)
+```
+
+3. Patch
+
+With Visual Studio Code, each library set as a submodule is automatically patched, but if you do not use Visual Studio Code, each library set as a submodule must be manually patched with the Git commands below in each library directory.
 
 - aws-iot-device-sdk-embedded-C
 
@@ -129,10 +139,10 @@ cd [user path]/RP2040-HAT-AWS-C/libraries/aws-iot-device-sdk-embedded-C/librarie
 cd D:/RP2040/RP2040-HAT-AWS-C/libraries/aws-iot-device-sdk-embedded-C/libraries/standard/coreHTTP
 
 /* Patch */
-git apply --ignore-whitespace ../../../../../patches/02_aws_iot_device_sdk_embedded_c_corehttp_network_interface.patch
+git apply --ignore-whitespace ../../../../../patches/01_aws_iot_device_sdk_embedded_c_corehttp_network_interface.patch
 ```
 
-3. Test
+4. Test
 
 Please refer to 'README.md' in each example directory to find detail guide for testing AWS IoT SDK examples.
 
@@ -165,8 +175,12 @@ RP2040-HAT-AWS-C
     ┃   ┃   ┣ timer_interface.c
     ┃   ┃   ┗ util.c
     ┣ ioLibrary_Driver
-    ┃   ┣ w5x00_spi.c
-    ┃   ┗ w5x00_spi.h
+    ┃   ┣ inc
+    ┃   ┃   ┣ w5x00_gpio_irq.h
+    ┃   ┃   ┗ w5x00_spi.h
+    ┃   ┗ src
+    ┃   ┃   ┣ w5x00_gpio_irq.c
+    ┃   ┃   ┗ w5x00_spi.c
     ┣ mbedtls
     ┃   ┗ inc
     ┃   ┃   ┗ ssl_config.h
@@ -179,44 +193,47 @@ RP2040-HAT-AWS-C
 
 - **ioLibrary_Driver**
 
-If you want to change things related to **SPI**, such as the SPI port number and SPI read/write function, or use a different MCU without using the RP2040, you need to change the code in the '**RP2040-HAT-AWS-C/port/ioLibrary_Driver/**' directory. Here is information about functions.
+If you want to change things related to **SPI**, such as the SPI port number and SPI read/write function, or GPIO port number and function related to **interrupt** or use a different MCU without using the RP2040, you need to change the code in the '**RP2040-HAT-AWS-C/port/ioLibrary_Driver/**' directory. Here is information about functions.
 
 ```cpp
+/* W5x00 */
 /*! \brief Set CS pin
  *  \ingroup w5x00_spi
  *
- * Set chip select pin of spi0 to low(Active low).
+ *  Set chip select pin of spi0 to low(Active low).
  *
- * \param none
+ *  \param none
  */
 static inline void wizchip_select(void);
 
 /*! \brief Set CS pin
  *  \ingroup w5x00_spi
  *
- * Set chip select pin of spi0 to high(Inactive high).
+ *  Set chip select pin of spi0 to high(Inactive high).
  *
- * \param none
+ *  \param none
  */
 static inline void wizchip_deselect(void);
 
 /*! \brief Read from an SPI device, blocking
  *  \ingroup w5x00_spi
- * Set spi_read_blocking function.
- * Read byte from SPI to rx_data buffer.
- * Blocks until all data is transferred. No timeout, as SPI hardware always transfers at a known data rate.
  *
- * \param none
+ *  Set spi_read_blocking function.
+ *  Read byte from SPI to rx_data buffer.
+ *  Blocks until all data is transferred. No timeout, as SPI hardware always transfers at a known data rate.
+ *
+ *  \param none
  */
 static uint8_t wizchip_read(void);
 
 /*! \brief Write to an SPI device, blocking
  *  \ingroup w5x00_spi
- * Set spi_write_blocking function.
- * Write byte from tx_data buffer to SPI device.
- * Blocks until all data is transferred. No timeout, as SPI hardware always transfers at a known data rate.
  *
- * \param tx_data Buffer of data to write
+ *  Set spi_write_blocking function.
+ *  Write byte from tx_data buffer to SPI device.
+ *  Blocks until all data is transferred. No timeout, as SPI hardware always transfers at a known data rate.
+ *
+ *  \param tx_data Buffer of data to write
  */
 static void wizchip_write(uint8_t tx_data);
 
@@ -224,87 +241,92 @@ static void wizchip_write(uint8_t tx_data);
 /*! \brief Configure all DMA parameters and optionally start transfer
  *  \ingroup w5x00_spi
  *
- * Configure all DMA parameters and read from DMA
+ *  Configure all DMA parameters and read from DMA
  *
- * \param pBuf Buffer of data to read
- * \param len element count (each element is of size transfer_data_size)
+ *  \param pBuf Buffer of data to read
+ *  \param len element count (each element is of size transfer_data_size)
  */
 static void wizchip_read_burst(uint8_t *pBuf, uint16_t len);
 
 /*! \brief Configure all DMA parameters and optionally start transfer
  *  \ingroup w5x00_spi
  *
- * Configure all DMA parameters and write to DMA
+ *  Configure all DMA parameters and write to DMA
  *
- * \param pBuf Buffer of data to write
- * \param len element count (each element is of size transfer_data_size)
+ *  \param pBuf Buffer of data to write
+ *  \param len element count (each element is of size transfer_data_size)
  */
 static void wizchip_write_burst(uint8_t *pBuf, uint16_t len);
 #endif
 
 /*! \brief Enter a critical section
  *  \ingroup w5x00_spi
- * Set ciritical section enter blocking function.
- * If the spin lock associated with this critical section is in use, then this
- * method will block until it is released.
  *
- * \param none
+ *  Set ciritical section enter blocking function.
+ *  If the spin lock associated with this critical section is in use, then this
+ *  method will block until it is released.
+ *
+ *  \param none
  */
 static void wizchip_critical_section_lock(void);
 
 /*! \brief Release a critical section
  *  \ingroup w5x00_spi
- * Set ciritical section exit function.
- * Release a critical section.
  *
- * \param none
+ *  Set ciritical section exit function.
+ *  Release a critical section.
+ *
+ *  \param none
  */
 static void wizchip_critical_section_unlock(void);
 
 /*! \brief Initialize SPI instances and Set DMA channel
  *  \ingroup w5x00_spi
- * Set GPIO to spi0.
- * Puts the SPI into a known state, and enable it.
- * Set DMA channel completion channel.
  *
- * \param none
+ *  Set GPIO to spi0.
+ *  Puts the SPI into a known state, and enable it.
+ *  Set DMA channel completion channel.
+ *
+ *  \param none
  */
 void wizchip_spi_initialize(void);
 
 /*! \brief Initialize a critical section structure
  *  \ingroup w5x00_spi
- * The critical section is initialized ready for use.
- * Registers callback function for critical section for WIZchip.
  *
- * \param none
+ *  The critical section is initialized ready for use.
+ *  Registers callback function for critical section for WIZchip.
+ *
+ *  \param none
  */
 void wizchip_cris_initialize(void);
 
 /*! \brief W5x00 chip reset
  *  \ingroup w5x00_spi
  *
- * Set a reset pin and reset.
+ *  Set a reset pin and reset.
  *
- * \param none
+ *  \param none
  */
 void wizchip_reset(void);
 
 /*! \brief Initialize WIZchip
  *  \ingroup w5x00_spi
- * Set callback function to read/write byte using SPI.
- * Set callback function for WIZchip select/deselect.
- * Set memory size of W5x00 chip and monitor PHY link status.
  *
- * \param none
+ *  Set callback function to read/write byte using SPI.
+ *  Set callback function for WIZchip select/deselect.
+ *  Set memory size of W5x00 chip and monitor PHY link status.
+ *
+ *  \param none
  */
 void wizchip_initialize(void);
 
 /*! \brief Check chip version
  *  \ingroup w5x00_spi
  *
- * Get version information.
+ *  Get version information.
  *
- * \param none
+ *  \param none
  */
 void wizchip_check(void);
 
@@ -312,30 +334,43 @@ void wizchip_check(void);
 /*! \brief Initialize network
  *  \ingroup w5x00_spi
  *
- * Set network information.
+ *  Set network information.
  *
- * \param net_info network information.
+ *  \param net_info network information.
  */
 void network_initialize(wiz_NetInfo net_info);
 
 /*! \brief Print network information
  *  \ingroup w5x00_spi
  *
- * Print network information about MAC address, IP address, Subnet mask, Gateway, DHCP and DNS address.
+ *  Print network information about MAC address, IP address, Subnet mask, Gateway, DHCP and DNS address.
  *
- * \param net_info network information.
+ *  \param net_info network information.
  */
 void print_network_information(wiz_NetInfo net_info);
+```
 
-/* Clock */
-/*! \brief Attempt to set a system clock frequency in khz
- *  \ingroup w5x00_spi
- * Set a system clock frequency in khz.
- * Configure the specified clock.
+```cpp
+/* GPIO */
+/*! \brief Initialize w5x00 gpio interrupt callback function
+ *  \ingroup w5x00_gpio_irq
  *
- * \param none
+ *  Add a w5x00 interrupt callback.
+ *
+ *  \param socket socket number
+ *  \param callback the gpio interrupt callback function
  */
-void set_clock_khz(void);
+void wizchip_gpio_interrupt_initialize(uint8_t socket, void (*callback)(void));
+
+/*! \brief Assign gpio interrupt callback function
+ *  \ingroup w5x00_gpio_irq
+ *
+ *  GPIO interrupt callback function.
+ *
+ *  \param gpio Which GPIO caused this interrupt
+ *  \param events Which events caused this interrupt. See \ref gpio_set_irq_enabled for details.
+ */
+static void wizchip_gpio_interrupt_callback(uint gpio, uint32_t events);
 ```
 
 - **timer**
@@ -343,31 +378,32 @@ void set_clock_khz(void);
 If you want to change things related to the **timer**. Also, if you use a different MCU without using the RP2040, you need to change the code in the '**RP2040-HAT-AWS-C/port/timer/**' directory. Here is information about functions.
 
 ```cpp
+/* Timer */
 /*! \brief Initialize timer callback function
- * \ingroup timer
+ *  \ingroup timer
  *
- * Add a repeating timer that is called repeatedly at the specified interval in microseconds.
+ *  Add a repeating timer that is called repeatedly at the specified interval in microseconds.
  *
- * \param callback the repeating timer callback function
+ *  \param callback the repeating timer callback function
  */
 void wizchip_1ms_timer_initialize(void (*callback)(void));
 
 /*! \brief Assign timer callback function
- * \ingroup timer
+ *  \ingroup timer
  *
- * 1ms timer callback function.
+ *  1ms timer callback function.
  *
- * \param t Information about a repeating timer
+ *  \param t Information about a repeating timer
  */
 bool wizchip_1ms_timer_callback(struct repeating_timer *t);
 
 /* Delay */
 /*! \brief Wait for the given number of milliseconds before returning
- * \ingroup timer
+ *  \ingroup timer
  *
- * This method attempts to perform a lower power sleep (using WFE) as much as possible.
+ *  This method attempts to perform a lower power sleep (using WFE) as much as possible.
  *
- * \param ms the number of milliseconds to sleep
+ *  \param ms the number of milliseconds to sleep
  */
 void wizchip_delay_ms(uint32_t ms);
 ```
@@ -379,8 +415,9 @@ Link
 -->
 
 [link-getting_started_with_raspberry_pi_pico]: https://datasheets.raspberrypi.org/pico/getting-started-with-pico.pdf
-[link-w5100s]: https://docs.wiznet.io/Product/iEthernet/W5100S/overview
 [link-rp2040]: https://www.raspberrypi.org/products/rp2040/
+[link-w5100s]: https://docs.wiznet.io/Product/iEthernet/W5100S/overview
+[link-w5500]: https://docs.wiznet.io/Product/iEthernet/W5500/overview
 [link-raspberry_pi_pico]: https://www.raspberrypi.org/products/raspberry-pi-pico/
 [link-raspberry_pi_pico_main]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/getting_started/raspberry_pi_pico_main.png
 [link-wiznet_ethernet_hat]: https://docs.wiznet.io/Product/Open-Source-Hardware/wiznet_ethernet_hat

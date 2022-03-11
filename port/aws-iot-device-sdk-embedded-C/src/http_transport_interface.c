@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Includes
  * ----------------------------------------------------------------------------------------------------
@@ -24,12 +24,12 @@
 #include "util.h"
 
 /**
-  * ----------------------------------------------------------------------------------------------------
-  * Macros
-  * ----------------------------------------------------------------------------------------------------
-  */
+ * ----------------------------------------------------------------------------------------------------
+ * Macros
+ * ----------------------------------------------------------------------------------------------------
+ */
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Variables
  * ----------------------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ http_config_t g_http_config;
 /* SSL context */
 tlsContext_t *g_http_tls_context_ptr;
 
-/*
+/**
  * ----------------------------------------------------------------------------------------------------
  * Functions
  * ----------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
     uint32_t currentTotalLen = 0;
 
     /* Configurations of the initial request headers that are passed to
-	 * #HTTPClient_InitializeRequestHeaders. */
+     * #HTTPClient_InitializeRequestHeaders. */
     HTTPRequestInfo_t requestInfo;
     /* Represents a response returned from an HTTP server. */
     HTTPResponse_t response;
@@ -91,7 +91,7 @@ int32_t http_send_request(TransportInterface_t *pTransportInterface, uint8_t *bu
     requestHeaders.bufferLen = HTTP_BUF_MAX_SIZE;
 
     /* Initialize the response object. The same buffer used for storing
-	 * request headers is reused here. */
+     * request headers is reused here. */
 
     response.pBuffer = buffer;
     response.bufferLen = HTTP_BUF_MAX_SIZE;
