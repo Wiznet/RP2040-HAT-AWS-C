@@ -26,7 +26,7 @@ The AWS IoT SDK examples were tested by configuring the development environment 
 <a name="hardware_requirements"></a>
 ## Hardware requirements
 
-The ethernet examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5500-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5500**][link-w5500] ethernet chip.
+The AWS IoT SDK examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/O module built on WIZnet's [**W5100S**][link-w5100s] ethernet chip, **W5100S-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5100S**][link-w5100s] ethernet chip or **W5500-EVB-Pico** - ethernet I/O module built on [**RP2040**][link-rp2040] and WIZnet's [**W5500**][link-w5500] ethernet chip.
 
 - [**Raspberry Pi Pico**][link-raspberry_pi_pico]
 
@@ -424,6 +424,8 @@ Link
 [link-wiznet_ethernet_hat_main]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/getting_started/wiznet_ethernet_hat_main.png
 [link-w5100s-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5100S/w5100s-evb-pico
 [link-w5100s-evb-pico_main]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/getting_started/w5100s-evb-pico_main.png
+[link-w5500-evb-pico]: https://docs.wiznet.io/Product/iEthernet/W5500/w5500-evb-pico
+[link-w5500-evb-pico_main]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/getting_started/w5500-evb-pico_main.png
 [link-http_https]: https://github.com/Wiznet/RP2040-HAT-AWS-C/tree/main/examples/aws_iot_http
 [link-connect_aws_iot_through_mqtt]: https://github.com/Wiznet/RP2040-HAT-AWS-C/tree/main/examples/aws_iot_mqtt
 [link-iolibrary_driver]: https://github.com/Wiznet/ioLibrary_Driver

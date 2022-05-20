@@ -99,7 +99,7 @@ You must enter the root certificate, client certificate and private key that wer
 
 Root certificate uses the RSA 2048 bit key, Amazon Root CA 1, and does not use the public key.
 
-Device certificate and key can be set in mqtt_certificate.h in 'RP2040-HAT-AWS-C/examples/aws_iot_mqtt/' directory.
+Device certificate and key can be set in 'mqtt_certificate.h' in 'RP2040-HAT-AWS-C/examples/aws_iot_mqtt/' directory.
 
 ```cpp
 uint8_t mqtt_root_ca[] =
@@ -168,4 +168,4 @@ Link
 [link-see_network_information_of_raspberry_pi_pico_connecting_to_aws_iot_and_publishing_message]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/see_network_information_of_raspberry_pi_pico_connecting_to_aws_iot_and_publishing_message.png
 [link-subscribe_to_publish_topic_and_receive_publish_message_through_test_function]: https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/subscribe_to_publish_topic_and_receive_publish_message_through_test_function.png
 [link-publish_message_through_test_function]:https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/publish_message_through_test_function.png
-[link-receive_message_about_subcribe_topic]:https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/receive_message_about_subcribe_topic.png
+[link-receive_message_about_subcribe_topic]:https://github.com/Wiznet/RP2040-HAT-AWS-C/blob/main/static/images/aws_iot_mqtt/receive_message_about_subscribe_topic.png
