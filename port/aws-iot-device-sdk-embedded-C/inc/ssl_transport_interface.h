@@ -34,7 +34,7 @@
 #define DEBUG_LEVEL 3
 #define DEBUG_BUFFER_SIZE 1024
 
-#define SSL_RECV_TIMEOUT_VALUE 10000
+#define SSL_RECV_TIMEOUT (1000 * 10) // 10 seconds
 
 /**
  * ----------------------------------------------------------------------------------------------------

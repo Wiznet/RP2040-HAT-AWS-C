@@ -206,7 +206,7 @@ int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *hos
     }
 
     mbedtls_ssl_conf_endpoint(&tlsContext->conf, MBEDTLS_SSL_IS_CLIENT);
-    mbedtls_ssl_conf_read_timeout(&tlsContext->conf, SSL_RECV_TIMEOUT_VALUE);
+    mbedtls_ssl_conf_read_timeout(&tlsContext->conf, SSL_RECV_TIMEOUT);
 
     if ((ret = mbedtls_ssl_setup(&tlsContext->ssl, &tlsContext->conf)) != 0)
     {

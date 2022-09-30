@@ -132,7 +132,7 @@ int mqtt_transport_yield(uint32_t mqtt_yield_timeout)
 {
     int ret;
 
-    ret = MQTT_ProcessLoop(&g_mqtt_config.mqtt_context, 60);
+    ret = MQTT_ProcessLoop(&g_mqtt_config.mqtt_context, mqtt_yield_timeout);
     if (ret != 0)
     {
         printf("MQTT process loop error : %d\n", ret);

@@ -156,7 +156,7 @@ int main()
     g_mqtt_tls_context.client_cert = mqtt_client_cert;
     g_mqtt_tls_context.private_key = mqtt_private_key;
 
-    retval = mqtt_transport_init(true, MQTT_CLIENT_ID, NULL, NULL, MQTT_DEFAULT_KEEP_ALIVE);
+    retval = mqtt_transport_init(true, MQTT_CLIENT_ID, NULL, NULL, MQTT_KEEP_ALIVE);
 
     if (retval != 0)
     {
@@ -195,7 +195,7 @@ int main()
             DHCP_run();
         }
 
-        retval = mqtt_transport_yield(MQTT_DEFAULT_YIELD_TIMEOUT);
+        retval = mqtt_transport_yield(MQTT_YIELD_TIMEOUT);
 
         if (retval != 0)
         {

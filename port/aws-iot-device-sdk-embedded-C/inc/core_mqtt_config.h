@@ -23,9 +23,9 @@
 #define MQTT_DOMAIN_MAX_SIZE 128
 
 /* Timeout */
-#define MQTT_TIMEOUT (1000 * 10)         // 10 seconds
-#define MQTT_DEFAULT_YIELD_TIMEOUT 10    // 10 milliseconds
-#define MQTT_DEFAULT_KEEP_ALIVE (60 * 3) // unit : second
+#define MQTT_TIMEOUT (1000 * 10)    // 10 seconds
+#define MQTT_YIELD_TIMEOUT (10 * 6) // 60 milliseconds
+#define MQTT_KEEP_ALIVE (10 * 6)    // 60 seconds
 
 /* Subscription number */
 #define MQTT_SUBSCRIPTION_MAX_NUM 3
