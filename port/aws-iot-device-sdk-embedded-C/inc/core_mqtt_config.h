@@ -24,7 +24,6 @@
 
 /* Timeout */
 #define MQTT_TIMEOUT (1000 * 10)    // 10 seconds
-#define MQTT_YIELD_TIMEOUT (10 * 6) // 60 milliseconds
 #define MQTT_KEEP_ALIVE (10 * 6)    // 60 seconds
 
 /* Subscription number */

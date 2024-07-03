@@ -28,7 +28,7 @@
 
 /**
  * ----------------------------------------------------------------------------------------------------
- * Variables
+ * Structures
  * ----------------------------------------------------------------------------------------------------
  */
 typedef enum
@@ -56,7 +56,7 @@ typedef struct __mqtt_config
  * ----------------------------------------------------------------------------------------------------
  */
 void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo, MQTTDeserializedInfo_t *pDeserializedInfo);
-int mqtt_transport_yield(uint32_t mqtt_yield_timeout);
+int mqtt_transport_yield(void);
 int8_t mqtt_transport_init(uint8_t cleanSession, uint8_t *ClientId, uint8_t *userName, uint8_t *password, uint32_t keepAlive);
 int mqtt_transport_subscribe(uint8_t qos, char *subscribe_topic);
 int8_t mqtt_transport_connect(uint8_t sock, uint8_t ssl_flag, uint8_t *recv_buf, uint32_t recv_buf_len, uint8_t *domain, uint32_t port, tlsContext_t *tls_context);

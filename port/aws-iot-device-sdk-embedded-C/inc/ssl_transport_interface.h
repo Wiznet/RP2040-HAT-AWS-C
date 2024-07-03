@@ -24,8 +24,6 @@
 #include "mbedtls/error.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/ctr_drbg.h"
-#include "mbedtls/compat-1.3.h"
-
 /**
  * ----------------------------------------------------------------------------------------------------
  * Macros
@@ -43,6 +41,7 @@
  */
 typedef struct
 {
+    uint8_t socket_fd;
 #if defined(MBEDTLS_ENTROPY_C)
     mbedtls_entropy_context entropy;
 #endif
@@ -78,6 +77,6 @@ int ssl_transport_disconnect(tlsContext_t *tlsContext, uint32_t timeout);
 unsigned int ssl_transport_close_notify(tlsContext_t *tlsContext);
 int ssl_transport_session_reset(tlsContext_t *tlsContext);
 int ssl_transport_check_ca(uint8_t *ca_data, uint32_t ca_len);
-int ssl_transport_check_pkey(uint8_t *pkey_data, uint32_t pkey_len);
+int ssl_transport_check_pkey(tlsContext_t *tlsContext, uint8_t *pkey_data, uint32_t pkey_len);
 
 #endif /* _SSL_TRANSPORT_INTERFACE_H_ */

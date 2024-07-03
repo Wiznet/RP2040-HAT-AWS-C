@@ -195,7 +195,7 @@ int main()
             DHCP_run();
         }
 
-        retval = mqtt_transport_yield(MQTT_YIELD_TIMEOUT);
+        retval = mqtt_transport_yield();
 
         if (retval != 0)
         {
