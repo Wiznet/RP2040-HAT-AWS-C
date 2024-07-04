@@ -128,11 +128,11 @@ void mqtt_event_callback(MQTTContext_t *pContext, MQTTPacketInfo_t *pPacketInfo,
     }
 }
 
-int mqtt_transport_yield(uint32_t mqtt_yield_timeout)
+int mqtt_transport_yield(void)
 {
     int ret;
 
-    ret = MQTT_ProcessLoop(&g_mqtt_config.mqtt_context, mqtt_yield_timeout);
+    ret = MQTT_ProcessLoop(&g_mqtt_config.mqtt_context);
     if (ret != 0)
     {
         printf("MQTT process loop error : %d\n", ret);

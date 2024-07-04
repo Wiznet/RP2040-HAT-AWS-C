@@ -17,7 +17,6 @@
 #include "mbedtls/error.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/ctr_drbg.h"
-#include "mbedtls/compat-1.3.h"
 
 #include "socket.h"
 
@@ -116,6 +115,7 @@ int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *hos
     mbedtls_x509_crt_init(&tlsContext->clicert);
     mbedtls_pk_init(&tlsContext->pkey);
 
+    tlsContext->socket_fd = socket_fd;
     /*
         Initialize certificates
     */
@@ -168,7 +168,7 @@ int ssl_transport_init(tlsContext_t *tlsContext, int *socket_fd, const char *hos
         }
         printf("ok! mbedtls_x509_crt_parse returned -0x%x while parsing device cert\r\n", -ret);
 
-        ret = mbedtls_pk_parse_key(&tlsContext->pkey, (const unsigned char *)tlsContext->private_key, strlen(tlsContext->private_key) + 1, NULL, 0);
+        ret = mbedtls_pk_parse_key(&tlsContext->pkey, (const unsigned char *)tlsContext->private_key, strlen(tlsContext->private_key) + 1, NULL, 0, mbedtls_ctr_drbg_random, &tlsContext->ctr_drbg);
         if (ret != 0)
         {
             printf(" failed\r\n  !  mbedtls_pk_parse_key returned -0x%x while parsing private key\r\n", -ret);
@@ -240,7 +240,7 @@ int ssl_socket_connect_timeout(tlsContext_t *tlsContext, char *addr, unsigned in
     int ret;
     uint32_t start_ms = millis();
 
-    uint8_t sock = (uint8_t)(tlsContext->ssl.p_bio);
+    uint8_t sock = (uint8_t)(tlsContext->socket_fd);
 
     /*socket open*/
     ret = socket(sock, Sn_MR_TCP, local_port, 0x00);
@@ -304,7 +304,7 @@ int ssl_transport_write(tlsContext_t *tlsContext, unsigned char *writebuf, unsig
 int ssl_transport_disconnect(tlsContext_t *tlsContext, uint32_t timeout)
 {
     int ret = 0;
-    uint8_t sock = (uint8_t)(tlsContext->ssl.p_bio);
+    uint8_t sock = (uint8_t)(tlsContext->socket_fd);
     uint32_t tickStart = millis();
 
     do
@@ -357,14 +357,14 @@ int ssl_transport_check_ca(uint8_t *ca_data, uint32_t ca_len)
     return ret;
 }
 
-int ssl_transport_check_pkey(uint8_t *pkey_data, uint32_t pkey_len)
+int ssl_transport_check_pkey(tlsContext_t *tlsContext, uint8_t *pkey_data, uint32_t pkey_len)
 {
     int ret;
 
     mbedtls_pk_context pk_cert;
     mbedtls_pk_init(&pk_cert);
 
-    ret = mbedtls_pk_parse_key(&pk_cert, (const char *)pkey_data, pkey_len + 1, NULL, 0);
+    ret = mbedtls_pk_parse_key(&pk_cert, (const char *)pkey_data, pkey_len + 1, NULL, 0, mbedtls_ctr_drbg_random, &tlsContext->ctr_drbg);
     if (ret != 0)
     {
         printf(" failed\r\n  !  mbedtls_pk_parse_key returned -0x%x while parsing private key\r\n", -ret);

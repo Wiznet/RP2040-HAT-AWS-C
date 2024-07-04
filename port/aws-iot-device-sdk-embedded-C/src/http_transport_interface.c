@@ -16,7 +16,6 @@
 #include "pico/binary_info.h"
 
 #include "http_transport_interface.h"
-#include "http_parser.h"
 #include "core_http_client_private.h"
 
 #include "dns_interface.h"
@@ -546,79 +545,80 @@ int32_t https_read(NetworkContext_t *pNetworkContext, void *pBuffer, size_t byte
     return size;
 }
 
-HTTPStatus_t getUrlInfo(const char *pUrl,
-                        size_t urlLen,
-                        const char **pAddress,
-                        size_t *pAddressLen,
-                        const char **pPath,
-                        size_t *pPathLen,
-                        uint32_t *port)
-{
-    /* http-parser status. Initialized to 1 to signify failure. */
-    int parserStatus = 1;
-    struct http_parser_url urlParser;
-    HTTPStatus_t httpStatus = HTTPSuccess;
+HTTPStatus_t getUrlInfo (const char *pUrl,
+              size_t urlLen,
+              const char **pAddress,
+              size_t *pAddressLen,
+              const char **pPath,
+              size_t *pPathLen,
+              uint32_t *port) {
 
-    /* Sets all members in urlParser to 0. */
-    http_parser_url_init(&urlParser);
+    const char *schema_end;
+    const char *host_start;
+    const char *host_end;
+    const char *port_start;
+    const char *port_end;
+    const char *path_start;
+    char port_str[6]; // Maximum 5 digits for port and null terminator
 
-    if ((pUrl == NULL) || (pAddress == NULL) || (pAddressLen == NULL))
-    {
-        LogError(("NULL parameter passed to getUrlAddress()."));
-        httpStatus = HTTPInvalidParameter;
+    *port = 0;
+    *pAddress = NULL;
+    *pAddressLen = 0;
+    *pPath = NULL;
+    *pPathLen = 0;
+
+    // Find schema
+    schema_end = strstr(pUrl, "://");
+    if (!schema_end) {
+        return HTTPParserInternalError; // Invalid URL
     }
 
-    if (httpStatus == HTTPSuccess)
-    {
-        parserStatus = http_parser_parse_url(pUrl, urlLen, 0, &urlParser);
+    // Find host
+    host_start = schema_end + 3; // Skip "://"
+    host_end = strpbrk(host_start, ":/");
+    if (!host_end) {
+        *pAddress = host_start;
+        *pAddressLen = urlLen - (host_start - pUrl);
+        return HTTPSuccess; // No port and path
+    }
+    *pAddress = host_start;
+    *pAddressLen = host_end - host_start;
 
-        if (parserStatus != 0)
-        {
-            LogError(("Error parsing the input URL %.*s. Error code: %d.",
-                      (int32_t)urlLen,
-                      pUrl,
-                      parserStatus));
-            httpStatus = HTTPParserInternalError;
+    // Find port (if any)
+    if (*host_end == ':') {
+        port_start = host_end + 1;
+        port_end = strchr(port_start, '/');
+        if (!port_end) {
+            port_end = pUrl + urlLen;
         }
+        if (port_end - port_start > 5) {
+            return HTTPParserInternalError; // Port number too long
+        }
+        memcpy(port_str, port_start, port_end - port_start);
+        port_str[port_end - port_start] = '\0';
+        *port = (uint32_t)atoi(port_str);
+        if (*port == 0) {
+            return HTTPParserInternalError; // Invalid port number
+        }
+        host_end = port_end;
     }
 
-    if (httpStatus == HTTPSuccess)
-    {
-        *pAddressLen = (size_t)(urlParser.field_data[UF_HOST].len);
-
-        if (*pAddressLen == 0)
-        {
-            httpStatus = HTTPNoResponse;
-            *pAddress = NULL;
-        }
-        else
-        {
-            *pAddress = &pUrl[urlParser.field_data[UF_HOST].off];
-        }
-
-        *pPathLen = (size_t)(urlParser.field_data[UF_PATH].len);
-
-        if (*pPathLen == 0)
-        {
-            httpStatus = HTTPNoResponse;
-            *pPath = NULL;
-        }
-        else
-        {
-            *pPath = &pUrl[urlParser.field_data[UF_PATH].off];
-        }
+    // Find path
+    path_start = strchr(host_end, '/');
+    if (path_start) {
+        *pPath = path_start;
+        *pPathLen = urlLen - (path_start - pUrl);
+    } else {
+        *pPath = "";
+        *pPathLen = 0;
     }
 
-    if (httpStatus != HTTPSuccess)
-    {
-        LogError(("Error parsing the address from URL %s. Error code %d",
-                  pUrl,
-                  httpStatus));
+    // Update pAddressLen if path is present
+    if (path_start) {
+        *pAddressLen = path_start - host_start;
     }
 
-    *port = urlParser.port;
-
-    return httpStatus;
+    return HTTPSuccess;
 }
 
 int is_https(const char *pUrl)
